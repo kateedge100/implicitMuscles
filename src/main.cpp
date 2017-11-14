@@ -7,12 +7,18 @@
 
 #include <QApplication>
 #include "MainWindow.h"
+#include "marchingcube.h"
 
 #include <random>
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
 #include <ext.hpp>
+
+
+#define NX 200
+#define NY 160
+#define NZ 160
 
 int main(int argc, char *argv[])
 {
@@ -44,6 +50,8 @@ int main(int argc, char *argv[])
     MainWindow w;
     // show it
     w.show();
+
+
     // hand control over to Qt framework
     return a.exec();
 }

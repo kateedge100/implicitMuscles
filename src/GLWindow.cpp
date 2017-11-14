@@ -1,4 +1,5 @@
 #include "GLWindow.h"
+#include "marchingcube.h"
 
 #include <iostream>
 #include <QColorDialog>
@@ -84,7 +85,7 @@ void GLWindow::mouseClick(QMouseEvent * _event)
 void GLWindow::init()
 {
   std::string shadersAddress = "shaders/";
-  m_shader = Shader( "m_shader", shadersAddress + "phong_vert.glsl", shadersAddress + "simplefrag.glsl" );
+  m_shader = Shader( "m_shader", shadersAddress + "phong_vert.glsl", shadersAddress + "implicitmuscle.glsl" );
 
   glLinkProgram( m_shader.getShaderProgram() );
   glUseProgram( m_shader.getShaderProgram() );
@@ -96,6 +97,69 @@ void GLWindow::init()
 
   m_mesh->setBufferIndex( 0 );
   m_amountVertexData = m_mesh->getAmountVertexData();
+
+  //--------------------------------------------------
+
+ MarchingCube *m = new MarchingCube();
+
+
+  m->LoadVolumeFromFile(std::string("cell"));
+/*
+  // load vertices
+  glBindBuffer( GL_ARRAY_BUFFER, m->m_vbo );
+  glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
+  glBufferSubData( GL_ARRAY_BUFFER, 0, m_mesh->getAmountVertexData() * sizeof(float), &m_mesh->getVertexData() );
+
+  // pass vertices to shader
+  GLint pos = glGetAttribLocation( m_shader.getShaderProgram(), "VertexPosition" );
+  glEnableVertexAttribArray( pos );
+  glVertexAttribPointer( pos, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+
+  // load normals
+  glBindBuffer( GL_ARRAY_BUFFER,	m_nbo );
+  glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
+  glBufferSubData( GL_ARRAY_BUFFER, 0, m_mesh->getAmountVertexData() * sizeof(float), &m_mesh->getNormalsData() );
+
+  // pass normals to shader
+  GLint n = glGetAttribLocation( m_shader.getShaderProgram(), "VertexNormal" );
+  glEnableVertexAttribArray( n );
+  glVertexAttribPointer( n, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+*/
+
+/*
+  //-------------------------------------------
+  //Screen Space Quad
+  const GLfloat quadVertices[24] =
+      {// Positions   // TexCoords
+       -1.0f,  1.0f,  0.0f, 1.0f,
+       -1.0f, -1.0f,  0.0f, 0.0f,
+       1.0f, -1.0f,  1.0f, 0.0f,
+
+       -1.0f,  1.0f,  0.0f, 1.0f,
+       1.0f,  1.0f,  1.0f, 1.0f,
+       1.0f, -1.0f,  1.0f, 0.0f};
+
+      // Setup screen VAO
+      glGenVertexArrays(1, &m_quadVAO);
+      glGenBuffers(1, &m_quadVBO);
+      glBindVertexArray(m_quadVAO);
+      glBindBuffer(GL_ARRAY_BUFFER, m_quadVBO);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+
+      //Pos attrib
+      glEnableVertexAttribArray(0);
+      glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)0);
+
+      //Colour attrib
+      glEnableVertexAttribArray(1);
+      glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat)));
+      glBindVertexArray(0);
+
+
+*/
+
+
+
 
   // load vertices
   glBindBuffer( GL_ARRAY_BUFFER, m_vbo );

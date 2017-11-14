@@ -42,7 +42,8 @@ HEADERS += include/MainWindow.h \
            include/Shader.h \
            include/Mesh.h \
            include/Scene.h \
-           include/Buffer.h
+           include/Buffer.h \
+    include/marchingcube.h
 
 SOURCES += src/main.cpp \
            src/MainWindow.cpp \
@@ -52,7 +53,8 @@ SOURCES += src/main.cpp \
            src/Shader.cpp \
            src/Mesh.cpp \
            src/Scene.cpp \
-           src/Buffer.cpp
+           src/Buffer.cpp \
+           src/marchingcube.cpp
 
 OTHER_FILES += shaders/* \
                models/*

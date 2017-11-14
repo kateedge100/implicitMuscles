@@ -232,5 +232,6 @@ void main()
        color = pow(color, vec3(0.4545));
 
     // Set the output color of our current pixel
-   FragColor = vec4(color,1.0);
+   //FragColor = vec4(color,1.0);
+        FragColor = vec4(LightIntensity * vec3(1,1,1),1.0);
 }

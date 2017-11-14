@@ -36,7 +36,7 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = ImplicitMuscles1.0.0
-DISTDIR = /home/i7426159/Desktop/Research/OpenGLTemplate/Project/obj/ImplicitMuscles1.0.0
+DISTDIR = /home/i7426159/Desktop/Research/implicitMuscle/obj/ImplicitMuscles1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-rpath,/opt/Qt5.9.0/5.9/gcc_64/lib
 LIBS          = $(SUBLIBS) -lGLU -lGLEW -L/opt/Qt5.9.0/5.9/gcc_64/lib -lQt5OpenGL -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lpthread 
@@ -59,7 +59,8 @@ SOURCES       = src/main.cpp \
 		src/Shader.cpp \
 		src/Mesh.cpp \
 		src/Scene.cpp \
-		src/Buffer.cpp moc/moc_MainWindow.cpp \
+		src/Buffer.cpp \
+		src/marchingcube.cpp moc/moc_MainWindow.cpp \
 		moc/moc_GLWindow.cpp
 OBJECTS       = obj/main.o \
 		obj/MainWindow.o \
@@ -70,6 +71,7 @@ OBJECTS       = obj/main.o \
 		obj/Mesh.o \
 		obj/Scene.o \
 		obj/Buffer.o \
+		obj/marchingcube.o \
 		obj/moc_MainWindow.o \
 		obj/moc_GLWindow.o
 DIST          = shaders/implicitmuscle.glsl \
@@ -260,7 +262,8 @@ DIST          = shaders/implicitmuscle.glsl \
 		include/Shader.h \
 		include/Mesh.h \
 		include/Scene.h \
-		include/Buffer.h src/main.cpp \
+		include/Buffer.h \
+		include/marchingcube.h src/main.cpp \
 		src/MainWindow.cpp \
 		src/GLWindow.cpp \
 		src/Camera.cpp \
@@ -268,7 +271,8 @@ DIST          = shaders/implicitmuscle.glsl \
 		src/Shader.cpp \
 		src/Mesh.cpp \
 		src/Scene.cpp \
-		src/Buffer.cpp
+		src/Buffer.cpp \
+		src/marchingcube.cpp
 QMAKE_TARGET  = ImplicitMuscles
 DESTDIR       = 
 TARGET        = ImplicitMuscles
@@ -666,8 +670,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /opt/Qt5.9.0/5.9/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents include/MainWindow.h include/GLWindow.h include/Camera.h include/TrackballCamera.h include/Shader.h include/Mesh.h include/Scene.h include/Buffer.h $(DISTDIR)/
-	$(COPY_FILE) --parents src/main.cpp src/MainWindow.cpp src/GLWindow.cpp src/Camera.cpp src/TrackballCamera.cpp src/Shader.cpp src/Mesh.cpp src/Scene.cpp src/Buffer.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents include/MainWindow.h include/GLWindow.h include/Camera.h include/TrackballCamera.h include/Shader.h include/Mesh.h include/Scene.h include/Buffer.h include/marchingcube.h $(DISTDIR)/
+	$(COPY_FILE) --parents src/main.cpp src/MainWindow.cpp src/GLWindow.cpp src/Camera.cpp src/TrackballCamera.cpp src/Shader.cpp src/Mesh.cpp src/Scene.cpp src/Buffer.cpp src/marchingcube.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ui/mainwindow.ui $(DISTDIR)/
 
 
@@ -1050,7 +1054,7 @@ moc/moc_MainWindow.cpp: /opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/QMainWindow \
 		include/MainWindow.h \
 		moc/moc_predefs.h \
 		/opt/Qt5.9.0/5.9/gcc_64/bin/moc
-	/opt/Qt5.9.0/5.9/gcc_64/bin/moc $(DEFINES) --include moc/moc_predefs.h -I/opt/Qt5.9.0/5.9/gcc_64/mkspecs/linux-g++ -I/home/i7426159/Desktop/Research/OpenGLTemplate/Project -I/home/i7426159/Desktop/Research/OpenGLTemplate/Project/include -I/home/i7426159/Desktop/Research/OpenGLTemplate/Project/ui -I/home/i7426159/Desktop/Research/OpenGLTemplate/glm -I/home/i7426159/Desktop/Research/OpenGLTemplate/Project/shaders -I/opt/Qt5.9.0/5.9/gcc_64/include -I/opt/Qt5.9.0/5.9/gcc_64/include/QtOpenGL -I/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets -I/opt/Qt5.9.0/5.9/gcc_64/include/QtGui -I/opt/Qt5.9.0/5.9/gcc_64/include/QtCore -I/usr/include/c++/4.8.5 -I/usr/include/c++/4.8.5/x86_64-redhat-linux -I/usr/include/c++/4.8.5/backward -I/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include -I/usr/local/include -I/usr/include include/MainWindow.h -o moc/moc_MainWindow.cpp
+	/opt/Qt5.9.0/5.9/gcc_64/bin/moc $(DEFINES) --include moc/moc_predefs.h -I/opt/Qt5.9.0/5.9/gcc_64/mkspecs/linux-g++ -I/home/i7426159/Desktop/Research/implicitMuscle -I/home/i7426159/Desktop/Research/implicitMuscle/include -I/home/i7426159/Desktop/Research/implicitMuscle/ui -I/home/i7426159/Desktop/Research/glm -I/home/i7426159/Desktop/Research/implicitMuscle/shaders -I/opt/Qt5.9.0/5.9/gcc_64/include -I/opt/Qt5.9.0/5.9/gcc_64/include/QtOpenGL -I/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets -I/opt/Qt5.9.0/5.9/gcc_64/include/QtGui -I/opt/Qt5.9.0/5.9/gcc_64/include/QtCore -I/usr/include/c++/4.8.5 -I/usr/include/c++/4.8.5/x86_64-redhat-linux -I/usr/include/c++/4.8.5/backward -I/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include -I/usr/local/include -I/usr/include include/MainWindow.h -o moc/moc_MainWindow.cpp
 
 moc/moc_GLWindow.cpp: include/Shader.h \
 		include/TrackballCamera.h \
@@ -1394,7 +1398,7 @@ moc/moc_GLWindow.cpp: include/Shader.h \
 		include/GLWindow.h \
 		moc/moc_predefs.h \
 		/opt/Qt5.9.0/5.9/gcc_64/bin/moc
-	/opt/Qt5.9.0/5.9/gcc_64/bin/moc $(DEFINES) --include moc/moc_predefs.h -I/opt/Qt5.9.0/5.9/gcc_64/mkspecs/linux-g++ -I/home/i7426159/Desktop/Research/OpenGLTemplate/Project -I/home/i7426159/Desktop/Research/OpenGLTemplate/Project/include -I/home/i7426159/Desktop/Research/OpenGLTemplate/Project/ui -I/home/i7426159/Desktop/Research/OpenGLTemplate/glm -I/home/i7426159/Desktop/Research/OpenGLTemplate/Project/shaders -I/opt/Qt5.9.0/5.9/gcc_64/include -I/opt/Qt5.9.0/5.9/gcc_64/include/QtOpenGL -I/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets -I/opt/Qt5.9.0/5.9/gcc_64/include/QtGui -I/opt/Qt5.9.0/5.9/gcc_64/include/QtCore -I/usr/include/c++/4.8.5 -I/usr/include/c++/4.8.5/x86_64-redhat-linux -I/usr/include/c++/4.8.5/backward -I/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include -I/usr/local/include -I/usr/include include/GLWindow.h -o moc/moc_GLWindow.cpp
+	/opt/Qt5.9.0/5.9/gcc_64/bin/moc $(DEFINES) --include moc/moc_predefs.h -I/opt/Qt5.9.0/5.9/gcc_64/mkspecs/linux-g++ -I/home/i7426159/Desktop/Research/implicitMuscle -I/home/i7426159/Desktop/Research/implicitMuscle/include -I/home/i7426159/Desktop/Research/implicitMuscle/ui -I/home/i7426159/Desktop/Research/glm -I/home/i7426159/Desktop/Research/implicitMuscle/shaders -I/opt/Qt5.9.0/5.9/gcc_64/include -I/opt/Qt5.9.0/5.9/gcc_64/include/QtOpenGL -I/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets -I/opt/Qt5.9.0/5.9/gcc_64/include/QtGui -I/opt/Qt5.9.0/5.9/gcc_64/include/QtCore -I/usr/include/c++/4.8.5 -I/usr/include/c++/4.8.5/x86_64-redhat-linux -I/usr/include/c++/4.8.5/backward -I/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include -I/usr/local/include -I/usr/include include/GLWindow.h -o moc/moc_GLWindow.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -3303,6 +3307,9 @@ obj/Scene.o: src/Scene.cpp include/Scene.h \
 
 obj/Buffer.o: src/Buffer.cpp include/Buffer.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/Buffer.o src/Buffer.cpp
+
+obj/marchingcube.o: src/marchingcube.cpp include/marchingcube.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/marchingcube.o src/marchingcube.cpp
 
 obj/moc_MainWindow.o: moc/moc_MainWindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/moc_MainWindow.o moc/moc_MainWindow.cpp
