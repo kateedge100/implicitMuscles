@@ -42,7 +42,7 @@ bool MarchingCube::PrepareVolume()
     {
         dims[n] = bbox_max[n]-bbox_min[n];
     }
-    // find dispacement, eg bounding box width divided by volume width ( number of squares wide grid is)
+    // find dispacement, eg bounding box width divided by volume width ( 0-1)
     disp[0] = dims[0]/static_cast<float>(volume_width);
     disp[1] = dims[1]/static_cast<float>(volume_height);
     disp[2] = dims[2]/static_cast<float>(volume_depth);
@@ -66,7 +66,7 @@ bool MarchingCube::PrepareVolume()
 }
 
 
-//// code taken from Xiasong
+////// code taken from Xiasong
 //bool MarchingCube::LoadVolumeFromFile(std::string _vol)
 //{
 //    std::ifstream in(_vol.c_str(), std::ifstream::binary);
@@ -169,7 +169,7 @@ void MarchingCube::createVAO()
     }
 
     std::vector<TRIANGLE>::iterator itr;
-    m_triNormal;
+
     for(itr=allTriangles.begin();itr!=allTriangles.end();++itr)
     {
         // two ways to compute the normal, 1. one normal per triangle; 2. each vertex got seperate normal
@@ -188,12 +188,12 @@ void MarchingCube::createVAO()
         }
     }
 
-    glGenVertexArrays(1, &m_vao);
-    glBindVertexArray(m_vao);
-    glGenBuffers(1, &m_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(m_vboMesh), 0, GL_STATIC_DRAW);
-
+//    glGenVertexArrays(1, &m_vao);
+//    glBindVertexArray(m_vao);
+//    glGenBuffers(1, &m_vbo);
+//    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(m_vboMesh), 0, GL_STATIC_DRAW);
+//    glGenBuffers( 1, &m_nbo );
     //Pos attrib
     //glEnableVertexAttribArray(0);
     //glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)0);
