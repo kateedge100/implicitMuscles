@@ -85,46 +85,53 @@ void GLWindow::mouseClick(QMouseEvent * _event)
 void GLWindow::init()
 {
   std::string shadersAddress = "shaders/";
-  m_shader = Shader( "m_shader", shadersAddress + "phong_vert.glsl", shadersAddress + "implicitmuscle.glsl" );
+  m_shader = Shader( "m_shader", shadersAddress + "phong_vert.glsl", shadersAddress + "simplefrag.glsl" );
 
   glLinkProgram( m_shader.getShaderProgram() );
   glUseProgram( m_shader.getShaderProgram() );
 
-  glGenVertexArrays( 1, &m_vao );
-  glBindVertexArray( m_vao );
-  glGenBuffers( 1, &m_vbo );
-  glGenBuffers( 1, &m_nbo );
+//  glGenVertexArrays( 1, &m_vao );
+//  glBindVertexArray( m_vao );
+//  glGenBuffers( 1, &m_vbo );
+    glGenBuffers( 1, &m_nbo );
 
-  m_mesh->setBufferIndex( 0 );
-  m_amountVertexData = m_mesh->getAmountVertexData();
+  //m_mesh->setBufferIndex( 0 );
+  //m_amountVertexData = m_mesh->getAmountVertexData();
+
+
+
 
   //--------------------------------------------------
 
  MarchingCube *m = new MarchingCube();
 
 
-  m->LoadVolumeFromFile(std::string("cell"));
-/*
-  // load vertices
-  glBindBuffer( GL_ARRAY_BUFFER, m->m_vbo );
-  glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
-  glBufferSubData( GL_ARRAY_BUFFER, 0, m_mesh->getAmountVertexData() * sizeof(float), &m_mesh->getVertexData() );
 
-  // pass vertices to shader
+
+  m->PrepareVolume();
+  m->createVAO();
+
+
+//  // load vertices
+  glBindBuffer( GL_ARRAY_BUFFER, m->m_vbo );
+  glBufferData( GL_ARRAY_BUFFER, m->m_volume_size * sizeof(float), 0, GL_STATIC_DRAW );
+  glBufferSubData( GL_ARRAY_BUFFER, 0, m->m_volume_size * sizeof(float), &m->m_vboMesh );
+
+//  // pass vertices to shader
   GLint pos = glGetAttribLocation( m_shader.getShaderProgram(), "VertexPosition" );
   glEnableVertexAttribArray( pos );
   glVertexAttribPointer( pos, 3, GL_FLOAT, GL_FALSE, 0, 0 );
 
-  // load normals
+//  // load normals
   glBindBuffer( GL_ARRAY_BUFFER,	m_nbo );
-  glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
-  glBufferSubData( GL_ARRAY_BUFFER, 0, m_mesh->getAmountVertexData() * sizeof(float), &m_mesh->getNormalsData() );
+  glBufferData( GL_ARRAY_BUFFER, m->m_volume_size * sizeof(float), 0, GL_STATIC_DRAW );
+  glBufferSubData( GL_ARRAY_BUFFER, 0, m->m_volume_size * sizeof(float), &m->m_triNormal );
 
-  // pass normals to shader
+//  // pass normals to shader
   GLint n = glGetAttribLocation( m_shader.getShaderProgram(), "VertexNormal" );
   glEnableVertexAttribArray( n );
   glVertexAttribPointer( n, 3, GL_FLOAT, GL_FALSE, 0, 0 );
-*/
+
 
 /*
   //-------------------------------------------
@@ -159,27 +166,6 @@ void GLWindow::init()
 */
 
 
-
-
-  // load vertices
-  glBindBuffer( GL_ARRAY_BUFFER, m_vbo );
-  glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
-  glBufferSubData( GL_ARRAY_BUFFER, 0, m_mesh->getAmountVertexData() * sizeof(float), &m_mesh->getVertexData() );
-
-  // pass vertices to shader
-  GLint pos = glGetAttribLocation( m_shader.getShaderProgram(), "VertexPosition" );
-  glEnableVertexAttribArray( pos );
-  glVertexAttribPointer( pos, 3, GL_FLOAT, GL_FALSE, 0, 0 );
-
-  // load normals
-  glBindBuffer( GL_ARRAY_BUFFER,	m_nbo );
-  glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
-  glBufferSubData( GL_ARRAY_BUFFER, 0, m_mesh->getAmountVertexData() * sizeof(float), &m_mesh->getNormalsData() );
-
-  // pass normals to shader
-  GLint n = glGetAttribLocation( m_shader.getShaderProgram(), "VertexNormal" );
-  glEnableVertexAttribArray( n );
-  glVertexAttribPointer( n, 3, GL_FLOAT, GL_FALSE, 0, 0 );
 
   // link matrices with shader locations
   m_MVAddress = glGetUniformLocation( m_shader.getShaderProgram(), "MV" );

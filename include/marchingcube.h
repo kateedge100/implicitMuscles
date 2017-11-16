@@ -1,5 +1,12 @@
 #ifndef MARCHINGCUBE_H
 #define MARCHINGCUBE_H
+
+#ifdef __APPLE__
+#include <OpenGL/gl3.h>
+#else
+#include <GL/glew.h>
+#endif
+
 #include <glm.hpp>
 #include <iostream>
 #include <fstream>
@@ -56,14 +63,18 @@ public:
     /// @brief The volume data
     //----------------------------------------------------------------------------------------------------------------------
     float           *volumeData;
+    unsigned int m_volume_size;
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief flag to indicate if a VBO has been created
     //----------------------------------------------------------------------------------------------------------------------
-    bool m_vbo;
+    bool m_vboFlag;
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief flag to indicate if a VBO has been created
     //----------------------------------------------------------------------------------------------------------------------
-    bool m_vao;
+    bool m_vaoFlag;
+
+    GLuint m_vbo;
+    GLuint m_vao;
 
     void createVAO();
 
@@ -75,6 +86,14 @@ public:
     unsigned int MarchingTriangles(GRIDCELL g, float iso, std::vector<TRIANGLE> &triList);
 
     glm::vec3 computeTriangleNormal(TRIANGLE &itr);
+
+    bool PrepareVolume();
+
+    float getFunctionValue(float x, float y, float z);
+
+    std::vector <VertData> m_vboMesh;
+
+    glm::vec3 m_triNormal;
 
 
 

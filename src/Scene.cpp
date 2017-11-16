@@ -1,4 +1,5 @@
 #include "Scene.h"
+#include "marchingcube.h"
 
 Scene::Scene()
 {
@@ -83,6 +84,7 @@ void Scene::Draw() const
   glViewport( 0, 0, m_width, m_height );
   glClearColor( 1, 1, 1, 1.0f );
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
 
   glDrawArrays( GL_TRIANGLES, m_mesh.getBufferIndex() / 3, ( m_mesh.getAmountVertexData() / 3 ) );
 }
