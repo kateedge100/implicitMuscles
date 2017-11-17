@@ -66,45 +66,45 @@ bool MarchingCube::PrepareVolume()
 }
 
 
-////// code taken from Xiasong
-//bool MarchingCube::LoadVolumeFromFile(std::string _vol)
-//{
-//    std::ifstream in(_vol.c_str(), std::ifstream::binary);
-//    if (in.is_open() != true)
-//    {
-//        std::cout<<"FILE NOT FOUND !!!! "<<_vol.c_str()<<"\n";
-//        return false;
-//    }
-//    // read in the volume data 200x160x160, 1 byte per voxel
-//    volume_width = 200;
-//    volume_height = 160;
-//    volume_depth = 160;
-//    unsigned int volume_size = volume_width*volume_height*volume_depth;
-//    char *volData = new char[volume_size];
-//    in.read(volData, volume_size);
+//// code taken from Xiasong
+bool MarchingCube::LoadVolumeFromFile(std::string _vol)
+{
+    std::ifstream in(_vol.c_str(), std::ifstream::binary);
+    if (in.is_open() != true)
+    {
+        std::cout<<"FILE NOT FOUND !!!! "<<_vol.c_str()<<"\n";
+        return false;
+    }
+    // read in the volume data 200x160x160, 1 byte per voxel
+    volume_width = 200;
+    volume_height = 160;
+    volume_depth = 160;
+    unsigned int volume_size = volume_width*volume_height*volume_depth;
+    char *volData = new char[volume_size];
+    in.read(volData, volume_size);
 
-//    // compute the minimum and maximum value of the volume
-//    unsigned char minVolumeData;
-//    unsigned char maxVolumeData;
-//    minVolumeData=maxVolumeData=volData[0];
-//    for(unsigned int i = 1; i<volume_size; i++)
-//    {
-//        if(minVolumeData>volData[i]) minVolumeData = volData[i];
-//        if(maxVolumeData<volData[i]) maxVolumeData = volData[i];
-//    }
+    // compute the minimum and maximum value of the volume
+    unsigned char minVolumeData;
+    unsigned char maxVolumeData;
+    minVolumeData=maxVolumeData=volData[0];
+    for(unsigned int i = 1; i<volume_size; i++)
+    {
+        if(minVolumeData>volData[i]) minVolumeData = volData[i];
+        if(maxVolumeData<volData[i]) maxVolumeData = volData[i];
+    }
 
-//    // normalize volume value into [0.0, 1.0]
-//    volumeData = new float[volume_size];
-//    float dim =maxVolumeData - minVolumeData;
-//    for(unsigned int i = 1; i<volume_size; i++)
-//    {
-//        volumeData[i]=((float)volData[i]-minVolumeData)/(float)dim;
-//    }
+    // normalize volume value into [0.0, 1.0]
+    volumeData = new float[volume_size];
+    float dim =maxVolumeData - minVolumeData;
+    for(unsigned int i = 1; i<volume_size; i++)
+    {
+        volumeData[i]=((float)volData[i]-minVolumeData)/(float)dim;
+    }
 
-//    delete volData;
-//    in.close();
-//    return true;
-//}
+    delete volData;
+    in.close();
+    return true;
+}
 
 void MarchingCube::createVAO()
 {
@@ -184,9 +184,33 @@ void MarchingCube::createVAO()
             d.nx = m_triNormal.x;
             d.ny = m_triNormal.y;
             d.nz = m_triNormal.z;
+            // put d vector intoo m_vboMesh
             m_vboMesh.push_back(d);
+
         }
+
     }
+
+
+        std::vector<float> verts;
+        for(int i =0; i < m_vboMesh.size(); ++i )
+        {
+           verts.push_back(m_vboMesh[i].x);
+           verts.push_back(m_vboMesh[i].y);
+           verts.push_back(m_vboMesh[i].z);
+           std::cout << i <<'\n';
+        }
+
+        std::vector<float> vertsNormal;
+        for(int i =0; i < m_triNormal.length(); ++i )
+        {
+           vertsNormal.push_back(m_triNormal[i]);
+
+
+        }
+     Mesh::write(verts,vertsNormal, "brain.obj");
+     std::cout<<"Object Created!";
+
 
 //    glGenVertexArrays(1, &m_vao);
 //    glBindVertexArray(m_vao);
@@ -251,25 +275,7 @@ void MarchingCube::createVAO()
 
     allTriangles.erase(allTriangles.begin(), allTriangles.end());
     */
-//    Mesh pippo;
-    std::vector<float> verts;
-    for(int i =0; i < m_vboMesh.size(); ++i )
-    {
-       verts.push_back(m_vboMesh[i].x);
-       verts.push_back(m_vboMesh[i].y);
-       verts.push_back(m_vboMesh[i].z);
-       std::cout << i <<'\n';
-    }
 
-    std::vector<float> vertsNormal;
-    for(int i =0; i < m_triNormal.length(); ++i )
-    {
-       vertsNormal.push_back(m_triNormal[i]);
-
-
-    }
- Mesh::write(verts,vertsNormal, "implicit.obj");
- std::cout<<"Object Created!";
 
 }
 

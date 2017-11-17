@@ -107,9 +107,14 @@ void GLWindow::init()
 
 
 
+
+
   //m->LoadVolumeFromFile(std::string("mri.raw"));
   m->PrepareVolume();
   m->createVAO();
+
+  m_amountVertexData = m->m_vboMesh.size();
+  std::cout<<"Number of vertices"<< m_amountVertexData;
 
   glGenVertexArrays( 1, &m_vao );
   glBindVertexArray( m_vao );
@@ -121,7 +126,7 @@ void GLWindow::init()
   // load vertices
   glBindBuffer( GL_ARRAY_BUFFER, m_vbo );
   glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
-  glBufferSubData( GL_ARRAY_BUFFER, 0, m->m_vboMesh.size(), &m->m_vboMesh );
+  glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m->m_vboMesh[0].x );
 
   // pass vertices to shader
   GLint pos = glGetAttribLocation( m_shader.getShaderProgram(), "VertexPosition" );
@@ -131,7 +136,7 @@ void GLWindow::init()
   // load normals
   glBindBuffer( GL_ARRAY_BUFFER,	m_nbo );
   glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
-  glBufferSubData( GL_ARRAY_BUFFER, 0, m->m_nVerts * sizeof(float), &m->m_triNormal );
+  glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m->m_triNormal[0] );
 
   // pass normals to shader
   GLint n = glGetAttribLocation( m_shader.getShaderProgram(), "VertexNormal" );
