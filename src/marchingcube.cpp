@@ -1,5 +1,5 @@
 #include "marchingcube.h"
-
+#include "Mesh.h"
 
 MarchingCube::MarchingCube()
 {
@@ -251,6 +251,26 @@ void MarchingCube::createVAO()
 
     allTriangles.erase(allTriangles.begin(), allTriangles.end());
     */
+//    Mesh pippo;
+    std::vector<float> verts;
+    for(int i =0; i < m_vboMesh.size(); ++i )
+    {
+       verts.push_back(m_vboMesh[i].x);
+       verts.push_back(m_vboMesh[i].y);
+       verts.push_back(m_vboMesh[i].z);
+       std::cout << i <<'\n';
+    }
+
+    std::vector<float> vertsNormal;
+    for(int i =0; i < m_triNormal.length(); ++i )
+    {
+       vertsNormal.push_back(m_triNormal[i]);
+
+
+    }
+ Mesh::write(verts,vertsNormal, "implicit.obj");
+ std::cout<<"Object Created!";
+
 }
 
 

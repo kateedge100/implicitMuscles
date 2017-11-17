@@ -107,7 +107,7 @@ void GLWindow::init()
 
 
 
-
+  //m->LoadVolumeFromFile(std::string("mri.raw"));
   m->PrepareVolume();
   m->createVAO();
 
@@ -139,37 +139,6 @@ void GLWindow::init()
   glVertexAttribPointer( n, 3, GL_FLOAT, GL_FALSE, 0, 0 );
 
 
-/*
-  //-------------------------------------------
-  //Screen Space Quad
-  const GLfloat quadVertices[24] =
-      {// Positions   // TexCoords
-       -1.0f,  1.0f,  0.0f, 1.0f,
-       -1.0f, -1.0f,  0.0f, 0.0f,
-       1.0f, -1.0f,  1.0f, 0.0f,
-
-       -1.0f,  1.0f,  0.0f, 1.0f,
-       1.0f,  1.0f,  1.0f, 1.0f,
-       1.0f, -1.0f,  1.0f, 0.0f};
-
-      // Setup screen VAO
-      glGenVertexArrays(1, &m_quadVAO);
-      glGenBuffers(1, &m_quadVBO);
-      glBindVertexArray(m_quadVAO);
-      glBindBuffer(GL_ARRAY_BUFFER, m_quadVBO);
-      glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
-
-      //Pos attrib
-      glEnableVertexAttribArray(0);
-      glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)0);
-
-      //Colour attrib
-      glEnableVertexAttribArray(1);
-      glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat)));
-      glBindVertexArray(0);
-
-
-*/
 
 
 
