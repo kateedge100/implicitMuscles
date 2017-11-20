@@ -11,13 +11,13 @@ MarchingCube::MarchingCube()
 
 
 // Implicit Sphere
-float MarchingCube::getFunctionValue(float x, float y, float z)
+float MarchingCube::getFunctionValue(float x, float y, float z, const double _offset)
 {
-    return x*x + y*y + z*z - 81.0f;
+    return (x*x + y*y + z*z - 81.0f) + _offset;
 }
 
 // Creates volume on grid from implicit function
-bool MarchingCube::PrepareVolume()
+bool MarchingCube::PrepareVolume(const double _offset)
 {
     volume_width = 100;
     volume_height = 100;
@@ -57,7 +57,7 @@ bool MarchingCube::PrepareVolume()
             for (int k = 0; k < volume_depth; k++)
             {
                 float z = bbox_min[2] + disp[2]*static_cast<float>(k);
-                float value = getFunctionValue(x,y,z);
+                float value = getFunctionValue(x,y,z, _offset);
                 volumeData[i*volume_width*volume_height + j*volume_width + k] = value;
             }
         }
@@ -192,12 +192,12 @@ void MarchingCube::createVAO()
     }
 
 
-        std::vector<float> verts;
+        m_verts;
         for(int i =0; i < m_vboMesh.size(); ++i )
         {
-           verts.push_back(m_vboMesh[i].x);
-           verts.push_back(m_vboMesh[i].y);
-           verts.push_back(m_vboMesh[i].z);
+           m_verts.push_back(m_vboMesh[i].x);
+           m_verts.push_back(m_vboMesh[i].y);
+           m_verts.push_back(m_vboMesh[i].z);
            std::cout << i <<'\n';
         }
 
@@ -208,7 +208,8 @@ void MarchingCube::createVAO()
 
 
         }
-     Mesh::write(verts,vertsNormal, "brain.obj");
+
+     Mesh::write(m_verts,vertsNormal, "brain.obj");
      std::cout<<"Object Created!";
 
 
@@ -270,13 +271,13 @@ void MarchingCube::createVAO()
     // finally we have finished for now so time to unbind the VAO
     m_vaoMesh->unbind();
 
-    // indicate we have a vao now
-    m_vao=true;
+
 
     allTriangles.erase(allTriangles.begin(), allTriangles.end());
     */
 
-
+     // indicate we have a vao now
+    // m_vao=true;
 }
 
 

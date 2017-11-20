@@ -12,6 +12,7 @@
 
 #include <QMainWindow>
 #include "GLWindow.h"
+#include "marchingcube.h"
 
 namespace Ui
 {

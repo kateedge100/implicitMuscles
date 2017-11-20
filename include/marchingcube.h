@@ -12,6 +12,10 @@
 #include <fstream>
 #include <vector>
 
+#include <QOpenGLWidget>
+#include <QResizeEvent>
+#include <QEvent>
+
 // a simple structure to hold our vertex data
 // had to move this outside the method as g++ complains about it
 // clang doesn't have a problem tho
@@ -88,13 +92,18 @@ public:
 
     glm::vec3 computeTriangleNormal(TRIANGLE &itr);
 
-    bool PrepareVolume();
+    bool PrepareVolume(const double _offset);
 
-    float getFunctionValue(float x, float y, float z);
+    float getFunctionValue(float x, float y, float z, const double _offset);
 
     std::vector <VertData> m_vboMesh;
 
     glm::vec3 m_triNormal;
+
+    // float vector version of vbo_mesh to pass into VBO
+    std::vector<float> m_verts;
+
+
 
 
 

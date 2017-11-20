@@ -37,6 +37,7 @@ public slots:
   void rotating( const bool _rotating ) { m_rotating = _rotating; }
   void init();
     void generateNewGeometry();
+    void updateOffset(const double _offset){std::cout<<"Offset Updated!\nNew offset is "<<_offset<<"\n";}
 protected:
   /// @brief  The following methods must be implimented in the sub class
   /// this is called when the window is created

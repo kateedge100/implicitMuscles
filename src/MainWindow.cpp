@@ -1,6 +1,7 @@
 #include "MainWindow.h"
 #include "ui_mainwindow.h"
 
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     m_ui(new Ui::MainWindow)
@@ -11,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_ui -> s_mainWindowGridLayout -> addWidget(m_gl,0,0,3,5);
     connect( m_ui->m_rotating, SIGNAL(clicked(bool)), m_gl, SLOT(rotating(bool)));
     connect( m_ui->generate, SIGNAL( clicked(bool)), m_gl, SLOT(generateNewGeometry()));
+    connect(m_ui->offset, SIGNAL(valueChanged(double)),m_gl, SLOT(updateOffset(double)) );
 }
 
 MainWindow::~MainWindow()

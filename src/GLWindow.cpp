@@ -110,10 +110,10 @@ void GLWindow::init()
 
 
   //m->LoadVolumeFromFile(std::string("mri.raw"));
-  m->PrepareVolume();
+  m->PrepareVolume(2.0);
   m->createVAO();
 
-  m_amountVertexData = m->m_vboMesh.size();
+  m_amountVertexData = m->m_verts.size();
   std::cout<<"Number of vertices"<< m_amountVertexData;
 
   glGenVertexArrays( 1, &m_vao );
@@ -126,17 +126,19 @@ void GLWindow::init()
   // load vertices
   glBindBuffer( GL_ARRAY_BUFFER, m_vbo );
   glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
-  glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m->m_vboMesh[0].x );
+  glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m->m_verts[0]);
 
   // pass vertices to shader
   GLint pos = glGetAttribLocation( m_shader.getShaderProgram(), "VertexPosition" );
   glEnableVertexAttribArray( pos );
   glVertexAttribPointer( pos, 3, GL_FLOAT, GL_FALSE, 0, 0 );
 
+
+  // M_TRINORMAL NOT NORMAL DATA CHANGEEEEEE
   // load normals
   glBindBuffer( GL_ARRAY_BUFFER,	m_nbo );
   glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
-  glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m->m_triNormal[0] );
+  glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m->m_vboMesh[0].nx );
 
   // pass normals to shader
   GLint n = glGetAttribLocation( m_shader.getShaderProgram(), "VertexNormal" );
@@ -202,9 +204,9 @@ void GLWindow::renderScene()
 
 //------------------------------------------------------------------------------------------------------------------------------
 
-/*void GLWindow::generateNewGeometry()
+void GLWindow::generateNewGeometry()
 {
-  static int count = 0;
+  /*static int count = 0;
   ++count;
 
   if ( count == m_meshes.size() )
@@ -234,6 +236,6 @@ void GLWindow::renderScene()
   // pass normals to shader
   GLint n = glGetAttribLocation( m_shader.getShaderProgram(), "VertexNormal" );
   glEnableVertexAttribArray( n );
-  glVertexAttribPointer( n, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+  glVertexAttribPointer( n, 3, GL_FLOAT, GL_FALSE, 0, 0 );*/
 
-}*/
+}

@@ -102,7 +102,7 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
+       <item row="3" column="1">
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -132,6 +132,16 @@
         <widget class="QPushButton" name="generate">
          <property name="text">
           <string>Generate</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QDoubleSpinBox" name="offset"/>
+       </item>
+       <item row="2" column="2">
+        <widget class="QLabel" name="offset_Label">
+         <property name="text">
+          <string>Offset</string>
          </property>
         </widget>
        </item>
