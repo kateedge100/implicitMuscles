@@ -16,6 +16,8 @@
 #include <QResizeEvent>
 #include <QEvent>
 
+
+
 // a simple structure to hold our vertex data
 // had to move this outside the method as g++ complains about it
 // clang doesn't have a problem tho
@@ -41,6 +43,7 @@ typedef struct {
 
 class MarchingCube
 {
+
 public:
     MarchingCube();
     ~MarchingCube();
@@ -48,8 +51,6 @@ public:
     double isolevel;
     glm::vec3 p1,p2;
     double valp1,valp2;
-
-    int Polygonise(GRIDCELL grid,double isolevel,TRIANGLE *triangles);
 
     glm::vec3 VertexInterp(double isolevel,glm::vec3 p1,glm::vec3 p2,double valp1,double valp2);
 
@@ -69,17 +70,6 @@ public:
     float           *volumeData;
     unsigned int m_volume_size;
     //----------------------------------------------------------------------------------------------------------------------
-    /// @brief flag to indicate if a VBO has been created
-    //----------------------------------------------------------------------------------------------------------------------
-    bool m_vboFlag;
-    //----------------------------------------------------------------------------------------------------------------------
-    /// @brief flag to indicate if a VBO has been created
-    //----------------------------------------------------------------------------------------------------------------------
-    bool m_vaoFlag;
-
-    GLuint m_vbo;
-    GLuint m_vao;
-    GLuint m_nbo;
 
     void createVAO();
 
@@ -92,9 +82,10 @@ public:
 
     glm::vec3 computeTriangleNormal(TRIANGLE &itr);
 
-    bool PrepareVolume(const double _offset);
+    bool PrepareVolume();
 
-    float getFunctionValue(float x, float y, float z, const double _offset);
+    float getSphereValue(float x, float y, float z);
+
 
     std::vector <VertData> m_vboMesh;
 
@@ -102,6 +93,24 @@ public:
 
     // float vector version of vbo_mesh to pass into VBO
     std::vector<float> m_verts;
+    std::vector<float> m_vertsNormal;
+
+    float unionOperation( float d1, float d2 ) { return std::min(d1,d2); }
+
+
+    float distanceToSegment(glm::vec3 a, glm::vec3 b, glm::vec3 pos);
+
+
+    float distanceToLine1(float x, float y, float z);
+    float distanceToLine2(float x, float y, float z);
+
+    float line1(float x, float y, float z);
+    float line2(float x, float y, float z);
+
+
+    float m_offset;
+
+
 
 
 

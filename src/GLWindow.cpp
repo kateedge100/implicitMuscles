@@ -18,6 +18,9 @@ GLWindow::GLWindow( QWidget *_parent ) : QOpenGLWidget( _parent )
   m_camera.setEye(0.0f, 0.0f, 0.0f);
   m_rotating = false;
 
+  m_vboFlag=false;
+  m_vaoFlag=false;
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -106,21 +109,21 @@ void GLWindow::init()
  MarchingCube *m = new MarchingCube();
 
 
-
-
-
-  //m->LoadVolumeFromFile(std::string("mri.raw"));
-  m->PrepareVolume(2.0);
   m->createVAO();
 
   m_amountVertexData = m->m_verts.size();
-  std::cout<<"Number of vertices"<< m_amountVertexData;
+
+  // if we have already created a VBO just return.
+  if(m_vaoFlag == true)
+  {
+      std::cout<<"VAO exist so returning\n";
+      return;
+  }
 
   glGenVertexArrays( 1, &m_vao );
   glBindVertexArray( m_vao );
   glGenBuffers( 1, &m_vbo );
   glGenBuffers( 1, &m_nbo );
-
 
 
   // load vertices
@@ -138,7 +141,7 @@ void GLWindow::init()
   // load normals
   glBindBuffer( GL_ARRAY_BUFFER,	m_nbo );
   glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
-  glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m->m_vboMesh[0].nx );
+  glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m->m_vertsNormal[0] );
 
   // pass normals to shader
   GLint n = glGetAttribLocation( m_shader.getShaderProgram(), "VertexNormal" );
@@ -146,14 +149,14 @@ void GLWindow::init()
   glVertexAttribPointer( n, 3, GL_FLOAT, GL_FALSE, 0, 0 );
 
 
-
-
-
   // link matrices with shader locations
   m_MVAddress = glGetUniformLocation( m_shader.getShaderProgram(), "MV" );
   m_MVPAddress = glGetUniformLocation( m_shader.getShaderProgram(), "MVP" );
   m_NAddress = glGetUniformLocation( m_shader.getShaderProgram(), "N" );
   m_timeAddress = glGetUniformLocation( m_shader.getShaderProgram(), "Time" );
+
+  m_vaoFlag = true;
+
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -192,17 +195,44 @@ void GLWindow::renderScene()
 
   glUniformMatrix3fv( m_NAddress, 1, GL_FALSE, glm::value_ptr( N ) );
 
-  // Pass time into shader
-  auto now = std::chrono::high_resolution_clock::now();
-  float ret_val = std::chrono::duration_cast<std::chrono::milliseconds>(now - m_lastTime).count()  * 0.001;
-  m_lastTime = now;
-
-  glUniform1f(m_timeAddress, ret_val);
-
   glDrawArrays( GL_TRIANGLES, 0 , ( m_amountVertexData / 3 ) );
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+
+void GLWindow::updateOffset(double _offset)
+{
+    MarchingCube *m = new MarchingCube();
+
+    m_amountVertexData = m->m_verts.size();
+
+    m->m_offset= _offset;
+
+    m->createVAO();
+
+    std::cout<<"Offset Updated!\nNew offset is "<<m->m_offset<<"\n";
+
+    // load vertices
+    glBindBuffer( GL_ARRAY_BUFFER, m_vbo );
+    glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
+    glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m->m_verts[0]);
+
+    // pass vertices to shader
+    GLint pos = glGetAttribLocation( m_shader.getShaderProgram(), "VertexPosition" );
+    glEnableVertexAttribArray( pos );
+    glVertexAttribPointer( pos, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+
+    // load normals
+    glBindBuffer( GL_ARRAY_BUFFER,	m_nbo );
+    glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
+    glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m->m_vboMesh[0].nx );
+
+    // pass normals to shader
+    GLint n = glGetAttribLocation( m_shader.getShaderProgram(), "VertexNormal" );
+    glEnableVertexAttribArray( n );
+    glVertexAttribPointer( n, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+
+}
 
 void GLWindow::generateNewGeometry()
 {

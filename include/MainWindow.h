@@ -37,6 +37,7 @@ private:
   void mouseMoveEvent(QMouseEvent * _event);
   void mousePressEvent(QMouseEvent *_event);
   void mouseReleaseEvent(QMouseEvent *_event);
+
 };
 
 #endif // MAINWINDOW_H

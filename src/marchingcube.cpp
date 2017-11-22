@@ -1,24 +1,109 @@
 #include "marchingcube.h"
 #include "Mesh.h"
 
+
+
 MarchingCube::MarchingCube()
 {
-    m_vboFlag=false;
-    m_vaoFlag=false;
     isolevel = 0.8;
 
+    m_offset = 2.0;
+
 }
 
 
-// Implicit Sphere
-float MarchingCube::getFunctionValue(float x, float y, float z, const double _offset)
+float MarchingCube::distanceToSegment(glm::vec3 a, glm::vec3 b, glm::vec3 pos)
 {
-    return (x*x + y*y + z*z - 81.0f) + _offset;
+    glm::vec3 p = pos;
+    glm::vec3 pa = p - a;
+    glm::vec3 ba = b - a;
+    if(dot(a-b,a-b) == 0.0) return 1.0;
+
+    float h = glm::clamp( dot(pa,ba) / dot(ba,ba), 0.0f, 1.0f );
+
+    return length( pa - ba*h);
 }
+
+float MarchingCube::distanceToLine1(float x, float y, float z)
+{
+    glm::vec3 pos= {x,y,z};
+    float distance = std::min(distanceToSegment(glm::vec3(-10.0, 3.0, 0.0), glm::vec3(-5.0, 0.0, 0.0), pos),
+                         distanceToSegment(glm::vec3(-5.0, 0.0, 0.0), glm::vec3(-1.0, 5.0, 0.0),pos));
+
+
+    distance = std::min(distance,distanceToSegment(glm::vec3(-1.0, 5.0, 0.0), glm::vec3(1.0, 2.0, 0.0),pos));
+
+    return distance;
+
+}
+
+float MarchingCube::distanceToLine2(float x, float y, float z)
+{
+    glm::vec3 pos= {x,y,z};
+    float distance = std::min(distanceToSegment(glm::vec3(0.0, -3.0, 0.0), glm::vec3(6.0, 2.0, 0.0), pos),
+                         distanceToSegment(glm::vec3(6.0, 2.0, 0.0), glm::vec3(8.0, 5.0, 0.0),pos));
+
+
+    distance = std::min(distance,distanceToSegment(glm::vec3(8.0, 5.0, 0.0), glm::vec3(10.0, 5.0, 0.0),pos));
+
+    return distance;
+
+}
+
+float MarchingCube::line1(float x, float y, float z)
+{
+
+
+    float line2_distance = distanceToLine2(x,y,z);
+    float line1_distance = distanceToLine1(x,y,z);
+
+
+    float bound = std::max(std::min((line1_distance - m_offset) - (line2_distance - m_offset), line1_distance), -line2_distance);
+    float r = 0.;
+    if (bound < 0.)
+    {
+        float fa = abs(bound/0.1);
+        r = fa/(fa+1.0);
+    }
+
+
+
+    return line1_distance-m_offset*r;
+
+}
+
+float MarchingCube::line2(float x, float y, float z)
+{
+
+
+    float line2_distance = distanceToLine2(x,y,z);
+    float line1_distance = distanceToLine1(x,y,z);
+
+
+    float bound = std::max(std::min((line2_distance - m_offset) - (line1_distance - m_offset), line2_distance), -line1_distance);
+    float r = 0.;
+    if (bound < 0.)
+    {
+        float fa = abs(bound/0.1);
+        r = fa/(fa+1.0);
+    }
+
+
+
+    return line2_distance-m_offset*r;
+
+}
+// Implicit Sphere
+float MarchingCube::getSphereValue(float x, float y, float z)
+{
+    return ((x-0)*(x-0) + y*y + z*z - 81.0f);
+}
+
 
 // Creates volume on grid from implicit function
-bool MarchingCube::PrepareVolume(const double _offset)
+bool MarchingCube::PrepareVolume()
 {
+
     volume_width = 100;
     volume_height = 100;
     volume_depth = 100;
@@ -28,12 +113,12 @@ bool MarchingCube::PrepareVolume(const double _offset)
     volumeData = new float[m_volume_size];
 
     float bbox_min[3], bbox_max[3]; //bounding box
-    bbox_min[0] = -10;
-    bbox_min[1] = -10;
-    bbox_min[2] = -10;
-    bbox_max[0] = 10;
-    bbox_max[1] = 10;
-    bbox_max[2] = 10;
+    bbox_min[0] = -20;
+    bbox_min[1] = -20;
+    bbox_min[2] = -20;
+    bbox_max[0] = 20;
+    bbox_max[1] = 20;
+    bbox_max[2] = 20;
 
     float dims[3], disp[3];
 
@@ -48,16 +133,16 @@ bool MarchingCube::PrepareVolume(const double _offset)
     disp[2] = dims[2]/static_cast<float>(volume_depth);
 
 
-    for (int i = 0; i < volume_width; i++)
+    for (uint i = 0; i < volume_width; i++)
     {
         float x = bbox_min[0] + disp[0]*static_cast<float>(i);
-        for (int j = 0; j < volume_height; j++)
+        for (uint j = 0; j < volume_height; j++)
         {
             float y = bbox_min[1] + disp[1]*static_cast<float>(j);
-            for (int k = 0; k < volume_depth; k++)
+            for (uint k = 0; k < volume_depth; k++)
             {
                 float z = bbox_min[2] + disp[2]*static_cast<float>(k);
-                float value = getFunctionValue(x,y,z, _offset);
+                float value =  unionOperation(line1(x,y,z), line2(x,y,z));
                 volumeData[i*volume_width*volume_height + j*volume_width + k] = value;
             }
         }
@@ -108,12 +193,11 @@ bool MarchingCube::LoadVolumeFromFile(std::string _vol)
 
 void MarchingCube::createVAO()
 {
-    // if we have already created a VBO just return.
-    if(m_vao == true)
-    {
-        std::cout<<"VAO exist so returning\n";
-        return;
-    }
+
+    //LoadVolumeFromFile(std::string("mri.raw"));
+
+    // Prepare the implicit volume ready for marching cubes to be applied
+    PrepareVolume();
 
 
     VertData    d;
@@ -198,86 +282,29 @@ void MarchingCube::createVAO()
            m_verts.push_back(m_vboMesh[i].x);
            m_verts.push_back(m_vboMesh[i].y);
            m_verts.push_back(m_vboMesh[i].z);
-           std::cout << i <<'\n';
+           //std::cout << i <<'\n';
         }
 
-        std::vector<float> vertsNormal;
-        for(int i =0; i < m_triNormal.length(); ++i )
+        m_vertsNormal;
+        for(int i =0; i < m_vboMesh.size(); ++i )
         {
-           vertsNormal.push_back(m_triNormal[i]);
+            m_vertsNormal.push_back(m_vboMesh[i].nx);
+            m_vertsNormal.push_back(m_vboMesh[i].ny);
+            m_vertsNormal.push_back(m_vboMesh[i].nz);
 
 
         }
 
-     Mesh::write(m_verts,vertsNormal, "brain.obj");
+     Mesh::write(m_verts,m_vertsNormal, "brain.obj");
      std::cout<<"Object Created!";
 
-
-//    glGenVertexArrays(1, &m_vao);
-//    glBindVertexArray(m_vao);
-//    glGenBuffers(1, &m_vbo);
-//    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-//    glBufferData(GL_ARRAY_BUFFER, sizeof(m_vboMesh), 0, GL_STATIC_DRAW);
-//    glGenBuffers( 1, &m_nbo );
-    //Pos attrib
-    //glEnableVertexAttribArray(0);
-    //glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)0);
-
-    //Colour attrib
-//    glEnableVertexAttribArray(1);
-//    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat)));
-//    glBindVertexArray(0);
-
-
-
-
-
-
-    /*std::string factoryName = "newFactory";
-
-    // first we grab an instance of our VOA
-    //m_vaoMesh = ngl::SimpleVAO::create(GL_TRIANGLES);
-    m_vaoMesh = ngl::VAOFactory::createVAO(factoryName,GL_TRIANGLES);
-    //m_vaoMesh= ngl::VertexArrayObject::createVOA(GL_TRIANGLES);
-    // next we bind it so it's active for setting data
-    m_vaoMesh->bind();
-    unsigned int m_meshSize=vboMesh.size();
-
-    // now we have our data add it to the VAO, we need to tell the VAO the following
-    // how much (in bytes) data we are copying
-    // a pointer to the first element of data (in this case the address of the first element of the
-    // std::vector
-
-    //m_vaoMesh->setData(vboMesh);
-
-
-    // in this case we have packed our data in interleaved format as follows
-    // nx,ny,nz,x,y,z
-    // If you look at the shader we have the following attributes being used
-    // attribute vec3 inVert; attribute 0
-    // attribute vec3 inNormal; attribure 1
-    // so we need to set the vertexAttributePointer so the correct size and type as follows
-    // vertex is attribute 0 with x,y,z(3) parts of type GL_FLOAT, our complete packed data is
-    // sizeof(vertData) and the offset into the data structure for the first x component is 3 (nx,ny,nz)..x
-    m_vaoMesh->setVertexAttributePointer(0,3,GL_FLOAT,sizeof(VertData),3);
-    // normal same as vertex only starts at position 2 (u,v)-> nx
-    m_vaoMesh->setVertexAttributePointer(1,3,GL_FLOAT,sizeof(VertData),0);
-
-
-    // now we have set the vertex attributes we tell the VAO class how many indices to draw when
-    // glDrawArrays is called, in this case we use buffSize (but if we wished less of the sphere to be drawn we could
-    // specify less (in steps of 3))
-    m_vaoMesh->setNumIndices(m_meshSize);
-    // finally we have finished for now so time to unbind the VAO
-    m_vaoMesh->unbind();
 
 
 
     allTriangles.erase(allTriangles.begin(), allTriangles.end());
-    */
 
-     // indicate we have a vao now
-    // m_vao=true;
+
+
 }
 
 
