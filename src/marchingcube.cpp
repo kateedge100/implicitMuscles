@@ -101,8 +101,10 @@ float MarchingCube::getSphereValue(float x, float y, float z)
 
 
 // Creates volume on grid from implicit function
-bool MarchingCube::PrepareVolume()
+bool MarchingCube::PrepareVolume(int lineFunc)
 {
+
+
 
     volume_width = 100;
     volume_height = 100;
@@ -142,7 +144,18 @@ bool MarchingCube::PrepareVolume()
             for (uint k = 0; k < volume_depth; k++)
             {
                 float z = bbox_min[2] + disp[2]*static_cast<float>(k);
-                float value =  unionOperation(line1(x,y,z), line2(x,y,z));
+
+                float value;
+
+                switch (lineFunc) {
+                case 1: value = line1(x,y,z);
+                    break;
+                case 2: value = line2(x,y,z);
+                default:
+                    break;
+                }
+
+                //value =  unionOperation(line1(x,y,z), line2(x,y,z));
                 volumeData[i*volume_width*volume_height + j*volume_width + k] = value;
             }
         }
@@ -191,13 +204,13 @@ bool MarchingCube::LoadVolumeFromFile(std::string _vol)
     return true;
 }
 
-void MarchingCube::createVAO()
+void MarchingCube::Polygonize(int lineNo)
 {
 
     //LoadVolumeFromFile(std::string("mri.raw"));
 
     // Prepare the implicit volume ready for marching cubes to be applied
-    PrepareVolume();
+    PrepareVolume(lineNo);
 
 
     VertData    d;

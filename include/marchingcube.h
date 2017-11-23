@@ -71,7 +71,7 @@ public:
     unsigned int m_volume_size;
     //----------------------------------------------------------------------------------------------------------------------
 
-    void createVAO();
+    void Polygonize(int lineNo);
 
     /// @brief The number of vertices in the object
     //----------------------------------------------------------------------------------------------------------------------
@@ -82,7 +82,7 @@ public:
 
     glm::vec3 computeTriangleNormal(TRIANGLE &itr);
 
-    bool PrepareVolume();
+    bool PrepareVolume(int lineFunc);
 
     float getSphereValue(float x, float y, float z);
 

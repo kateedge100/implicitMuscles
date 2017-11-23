@@ -93,23 +93,14 @@ void GLWindow::init()
   glLinkProgram( m_shader.getShaderProgram() );
   glUseProgram( m_shader.getShaderProgram() );
 
-//  glGenVertexArrays( 1, &m_vao );
-//  glBindVertexArray( m_vao );
-//  glGenBuffers( 1, &m_vbo );
 
-
-  //m_mesh->setBufferIndex( 0 );
-  //m_amountVertexData = m_mesh->getAmountVertexData();
-
-
-
-
-  //--------------------------------------------------
+  //-------------------------------------------------- Marching Cubes Stuff
 
  MarchingCube *m = new MarchingCube();
 
-
-  m->createVAO();
+  // polgonize lines 1 and 2
+  m->Polygonize(1);
+  m->Polygonize(2);
 
   m_amountVertexData = m->m_verts.size();
 
@@ -137,7 +128,6 @@ void GLWindow::init()
   glVertexAttribPointer( pos, 3, GL_FLOAT, GL_FALSE, 0, 0 );
 
 
-  // M_TRINORMAL NOT NORMAL DATA CHANGEEEEEE
   // load normals
   glBindBuffer( GL_ARRAY_BUFFER,	m_nbo );
   glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
@@ -204,11 +194,15 @@ void GLWindow::updateOffset(double _offset)
 {
     MarchingCube *m = new MarchingCube();
 
-    m_amountVertexData = m->m_verts.size();
-
     m->m_offset= _offset;
 
-    m->createVAO();
+    m->Polygonize(1);
+    m->Polygonize(2);
+
+
+
+
+    m_amountVertexData = m->m_verts.size();
 
     std::cout<<"Offset Updated!\nNew offset is "<<m->m_offset<<"\n";
 
@@ -225,7 +219,7 @@ void GLWindow::updateOffset(double _offset)
     // load normals
     glBindBuffer( GL_ARRAY_BUFFER,	m_nbo );
     glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
-    glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m->m_vboMesh[0].nx );
+    glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m->m_vertsNormal[0] );
 
     // pass normals to shader
     GLint n = glGetAttribLocation( m_shader.getShaderProgram(), "VertexNormal" );
