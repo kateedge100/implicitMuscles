@@ -57,7 +57,8 @@ SOURCES += src/main.cpp \
            src/marchingcube.cpp
 
 OTHER_FILES += shaders/* \
-               models/*
+               models/* \
+               data/*
 
 FORMS += ui/mainwindow.ui
 
@@ -66,7 +67,7 @@ OBJECTS_DIR = obj
 MOC_DIR = moc
 UI_DIR = ui
 
-linux:LIBS += -lGL -lGLU -lGLEW
+linux:LIBS += -lGL -lGLU -lGLEW -lCGAL
 
 
 #DISTFILES +=

@@ -39,7 +39,7 @@ DISTNAME      = ImplicitMuscles1.0.0
 DISTDIR = /home/i7426159/Desktop/Research/implicitMuscle/obj/ImplicitMuscles1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-rpath,/opt/Qt5.9.0/5.9/gcc_64/lib
-LIBS          = $(SUBLIBS) -lGLU -lGLEW -L/opt/Qt5.9.0/5.9/gcc_64/lib -lQt5OpenGL -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lpthread 
+LIBS          = $(SUBLIBS) -lGLU -lGLEW -lCGAL -L/opt/Qt5.9.0/5.9/gcc_64/lib -lQt5OpenGL -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lpthread 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -1051,6 +1051,7 @@ moc/moc_MainWindow.cpp: /opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/QMainWindow \
 		../glm/gtx/scalar_multiplication.hpp \
 		../glm/gtx/range.hpp \
 		include/Buffer.h \
+		include/marchingcube.h \
 		include/MainWindow.h \
 		moc/moc_predefs.h \
 		/opt/Qt5.9.0/5.9/gcc_64/bin/moc
@@ -1770,7 +1771,8 @@ obj/main.o: src/main.cpp /opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/QApplication 
 		../glm/gtx/wrap.inl \
 		../glm/gtx/scalar_multiplication.hpp \
 		../glm/gtx/range.hpp \
-		include/Buffer.h
+		include/Buffer.h \
+		include/marchingcube.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/main.o src/main.cpp
 
 obj/MainWindow.o: src/MainWindow.cpp include/MainWindow.h \
@@ -2118,6 +2120,7 @@ obj/MainWindow.o: src/MainWindow.cpp include/MainWindow.h \
 		../glm/gtx/scalar_multiplication.hpp \
 		../glm/gtx/range.hpp \
 		include/Buffer.h \
+		include/marchingcube.h \
 		ui/ui_mainwindow.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/QVariant \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/QAction \
@@ -2135,6 +2138,11 @@ obj/MainWindow.o: src/MainWindow.cpp include/MainWindow.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/QCheckBox \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/qcheckbox.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/QDoubleSpinBox \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/qspinbox.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qvalidator.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qregularexpression.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/QGridLayout \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/qgridlayout.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/qlayout.h \
@@ -2151,9 +2159,6 @@ obj/MainWindow.o: src/MainWindow.cpp include/MainWindow.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qitemselectionmodel.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/qstyleoption.h \
-		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/qabstractspinbox.h \
-		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qvalidator.h \
-		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qregularexpression.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/qslider.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/qabstractslider.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/qstyle.h \
@@ -2509,6 +2514,7 @@ obj/GLWindow.o: src/GLWindow.cpp include/GLWindow.h \
 		../glm/gtx/scalar_multiplication.hpp \
 		../glm/gtx/range.hpp \
 		include/Buffer.h \
+		include/marchingcube.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/QColorDialog \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/qcolordialog.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/qdialog.h \
@@ -3302,13 +3308,217 @@ obj/Scene.o: src/Scene.cpp include/Scene.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qopengles2ext.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qopenglext.h \
 		include/Mesh.h \
-		include/Buffer.h
+		include/Buffer.h \
+		include/marchingcube.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/Scene.o src/Scene.cpp
 
 obj/Buffer.o: src/Buffer.cpp include/Buffer.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/Buffer.o src/Buffer.cpp
 
-obj/marchingcube.o: src/marchingcube.cpp include/marchingcube.h
+obj/marchingcube.o: src/marchingcube.cpp include/marchingcube.h \
+		../glm/glm.hpp \
+		../glm/detail/_fixes.hpp \
+		../glm/fwd.hpp \
+		../glm/detail/type_int.hpp \
+		../glm/detail/setup.hpp \
+		../glm/simd/platform.h \
+		../glm/detail/type_float.hpp \
+		../glm/detail/type_vec.hpp \
+		../glm/detail/precision.hpp \
+		../glm/detail/type_mat.hpp \
+		../glm/vec2.hpp \
+		../glm/detail/type_vec2.hpp \
+		../glm/detail/_swizzle.hpp \
+		../glm/detail/_swizzle_func.hpp \
+		../glm/detail/type_vec2.inl \
+		../glm/vec3.hpp \
+		../glm/detail/type_vec3.hpp \
+		../glm/detail/type_vec3.inl \
+		../glm/vec4.hpp \
+		../glm/detail/type_vec4.hpp \
+		../glm/detail/type_vec4.inl \
+		../glm/detail/type_vec4_simd.inl \
+		../glm/mat2x2.hpp \
+		../glm/detail/type_mat2x2.hpp \
+		../glm/detail/type_mat2x2.inl \
+		../glm/detail/func_matrix.hpp \
+		../glm/mat2x3.hpp \
+		../glm/detail/type_mat2x3.hpp \
+		../glm/detail/type_mat2x3.inl \
+		../glm/mat2x4.hpp \
+		../glm/detail/type_mat2x4.hpp \
+		../glm/detail/type_mat2x4.inl \
+		../glm/mat3x2.hpp \
+		../glm/detail/type_mat3x2.hpp \
+		../glm/detail/type_mat3x2.inl \
+		../glm/mat3x3.hpp \
+		../glm/detail/type_mat3x3.hpp \
+		../glm/detail/type_mat3x3.inl \
+		../glm/mat3x4.hpp \
+		../glm/detail/type_mat3x4.hpp \
+		../glm/detail/type_mat3x4.inl \
+		../glm/mat4x2.hpp \
+		../glm/detail/type_mat4x2.hpp \
+		../glm/detail/type_mat4x2.inl \
+		../glm/mat4x3.hpp \
+		../glm/detail/type_mat4x3.hpp \
+		../glm/detail/type_mat4x3.inl \
+		../glm/mat4x4.hpp \
+		../glm/detail/type_mat4x4.hpp \
+		../glm/detail/type_mat4x4.inl \
+		../glm/detail/type_mat4x4_simd.inl \
+		../glm/detail/func_matrix.inl \
+		../glm/geometric.hpp \
+		../glm/detail/func_geometric.hpp \
+		../glm/detail/func_geometric.inl \
+		../glm/detail/func_exponential.hpp \
+		../glm/detail/type_vec1.hpp \
+		../glm/detail/type_vec1.inl \
+		../glm/detail/func_exponential.inl \
+		../glm/detail/func_vector_relational.hpp \
+		../glm/detail/func_vector_relational.inl \
+		../glm/detail/func_vector_relational_simd.inl \
+		../glm/detail/_vectorize.hpp \
+		../glm/detail/func_exponential_simd.inl \
+		../glm/simd/exponential.h \
+		../glm/detail/func_common.hpp \
+		../glm/detail/func_common.inl \
+		../glm/detail/func_common_simd.inl \
+		../glm/simd/common.h \
+		../glm/detail/func_geometric_simd.inl \
+		../glm/simd/geometric.h \
+		../glm/detail/func_matrix_simd.inl \
+		../glm/simd/matrix.h \
+		../glm/trigonometric.hpp \
+		../glm/detail/func_trigonometric.hpp \
+		../glm/detail/func_trigonometric.inl \
+		../glm/detail/func_trigonometric_simd.inl \
+		../glm/exponential.hpp \
+		../glm/common.hpp \
+		../glm/packing.hpp \
+		../glm/detail/func_packing.hpp \
+		../glm/detail/func_packing.inl \
+		../glm/detail/type_half.hpp \
+		../glm/detail/type_half.inl \
+		../glm/detail/func_packing_simd.inl \
+		../glm/matrix.hpp \
+		../glm/vector_relational.hpp \
+		../glm/integer.hpp \
+		../glm/detail/func_integer.hpp \
+		../glm/detail/func_integer.inl \
+		../glm/detail/func_integer_simd.inl \
+		../glm/simd/integer.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/QOpenGLWidget \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/qopenglwidget.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qtguiglobal.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qglobal.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qconfig-bootstrapped.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qconfig.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qtcore-config.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qsystemdetection.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qprocessordetection.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qcompilerdetection.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qtypeinfo.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qsysinfo.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qlogging.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qflags.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qatomic.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qbasicatomic.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qgenericatomic.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qatomic_msvc.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qglobalstatic.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qmutex.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qnumeric.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qversiontagging.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qtgui-config.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/qtwidgets-config.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/QWidget \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/qwidget.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qwindowdefs.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qobjectdefs.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qnamespace.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qwindowdefs_win.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qobject.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qstring.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qchar.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qbytearray.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qrefcount.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qarraydata.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qstringbuilder.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qlist.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qalgorithms.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qiterator.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qhashfunctions.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qpair.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qbytearraylist.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qstringlist.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qregexp.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qstringmatcher.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qcoreevent.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qscopedpointer.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qmetatype.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qvarlengtharray.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qcontainerfwd.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qobject_impl.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qmargins.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qpaintdevice.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qrect.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qsize.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qpoint.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qpalette.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qcolor.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qrgb.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qrgba64.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qbrush.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qvector.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qmatrix.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qpolygon.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qregion.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qdatastream.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qiodevice.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qline.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qtransform.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qpainterpath.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qimage.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qpixelformat.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qpixmap.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qsharedpointer.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qshareddata.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qhash.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qfont.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qfontmetrics.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qfontinfo.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/qsizepolicy.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qcursor.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qkeysequence.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qevent.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qvariant.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qmap.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qdebug.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qtextstream.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qlocale.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qset.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qcontiguouscache.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qurl.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qurlquery.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qfile.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qfiledevice.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qvector2d.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qtouchdevice.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/QSurfaceFormat \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qsurfaceformat.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qopengl.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qt_windows.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qopengles2ext.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qopenglext.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/QResizeEvent \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/QEvent \
+		include/Mesh.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/marchingcube.o src/marchingcube.cpp
 
 obj/moc_MainWindow.o: moc/moc_MainWindow.cpp 

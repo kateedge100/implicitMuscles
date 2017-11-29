@@ -20,8 +20,10 @@
 #define NY 160
 #define NZ 160
 
+
 int main(int argc, char *argv[])
 {
+
     // create an OpenGL format specifier
     QSurfaceFormat format;
     // set the number of samples for multisampling

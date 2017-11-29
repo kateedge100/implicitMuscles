@@ -204,7 +204,18 @@ bool MarchingCube::LoadVolumeFromFile(std::string _vol)
     return true;
 }
 
-void MarchingCube::Polygonize(int lineNo)
+void MarchingCube::createOffsetArray()
+{
+    for(int i = 0; i<10; i++)
+    {
+        m_offset = float(i);
+        Polygonize(1);
+        Polygonize(2);
+    }
+
+}
+
+std::vector <float> MarchingCube::Polygonize(int lineNo)
 {
 
     //LoadVolumeFromFile(std::string("mri.raw"));
@@ -298,6 +309,7 @@ void MarchingCube::Polygonize(int lineNo)
            //std::cout << i <<'\n';
         }
 
+
         m_vertsNormal;
         for(int i =0; i < m_vboMesh.size(); ++i )
         {
@@ -308,13 +320,15 @@ void MarchingCube::Polygonize(int lineNo)
 
         }
 
-     Mesh::write(m_verts,m_vertsNormal, "brain.obj");
+     //Mesh::write(m_verts,m_vertsNormal, "brain.obj");
      std::cout<<"Object Created!";
 
 
 
 
     allTriangles.erase(allTriangles.begin(), allTriangles.end());
+
+    return m_verts;
 
 
 

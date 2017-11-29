@@ -38,6 +38,7 @@ public slots:
   void init();
     void generateNewGeometry();
     void updateOffset(double _offset);
+    void showBones();
 
 protected:
   /// @brief  The following methods must be implimented in the sub class
@@ -107,6 +108,12 @@ private :
   bool m_vaoFlag;
   //------------------------------------------------------------------------------------------------
   bool m_vboFlag;
+  //------------------------------------------------------------------------------------------------
+  bool m_showBones;
+
+  void createVAO(float _verts, float _norms, float _amountData);
+
+
 
 
 };

@@ -27,7 +27,7 @@ GLWindow::GLWindow( QWidget *_parent ) : QOpenGLWidget( _parent )
 
 void GLWindow::initializeGL()
 {
-#ifdef linux
+#ifdef __linux__
   // this needs to be after the context creation, otherwise it GLEW will crash
   //std::cout <<"linux \n";
   glewExperimental = GL_TRUE;
@@ -40,14 +40,15 @@ void GLWindow::initializeGL()
   glClearColor( 0.5f, 0.5f, 0.5f, 1.0f );
   glViewport( 0, 0, devicePixelRatio(), devicePixelRatio() );
 
-//  m_meshes[0] = Mesh( "models/cube.obj", "cube" );
-//  m_meshes[1] = Mesh( "models/Face.obj", "Face" );
-//  m_meshes[2] = Mesh( "models/Suzanne.obj", "Suzanne" );
-//  m_meshes[3] = Mesh( "models/test2.obj", "weirdShape" );
-//  m_meshes[4] = Mesh( "models/Asteroid.obj", "Asteroid" );
-//  m_mesh = & m_meshes[0];
+  m_meshes[0] = Mesh( "models/bone.obj", "bone" );
+  m_meshes[1] = Mesh( "models/Face.obj", "Face" );
+  m_meshes[2] = Mesh( "models/Suzanne.obj", "Suzanne" );
+  m_meshes[3] = Mesh( "models/test2.obj", "weirdShape" );
+  m_meshes[4] = Mesh( "models/Asteroid.obj", "Asteroid" );
+  m_mesh = & m_meshes[0];
 
   init();
+  //m_MV = glm::translate( m_MV, glm::vec3(-2.0f, -.0f, -20.0f) );
   m_MV = glm::translate( m_MV, glm::vec3(0.0f, 0.0f, -2.0f) );
 }
 
@@ -94,6 +95,8 @@ void GLWindow::init()
   glUseProgram( m_shader.getShaderProgram() );
 
 
+
+
   //-------------------------------------------------- Marching Cubes Stuff
 
  MarchingCube *m = new MarchingCube();
@@ -102,7 +105,7 @@ void GLWindow::init()
   m->Polygonize(1);
   m->Polygonize(2);
 
-  m_amountVertexData = m->m_verts.size();
+
 
   // if we have already created a VBO just return.
   if(m_vaoFlag == true)
@@ -111,11 +114,17 @@ void GLWindow::init()
       return;
   }
 
+  m_amountVertexData = m->m_verts.size();
+
   glGenVertexArrays( 1, &m_vao );
   glBindVertexArray( m_vao );
   glGenBuffers( 1, &m_vbo );
   glGenBuffers( 1, &m_nbo );
 
+
+  //createVAO(m->m_verts[0], m->m_vertsNormal[0], m->m_verts.size() );
+
+  //showBones();
 
   // load vertices
   glBindBuffer( GL_ARRAY_BUFFER, m_vbo );
@@ -138,16 +147,49 @@ void GLWindow::init()
   glEnableVertexAttribArray( n );
   glVertexAttribPointer( n, 3, GL_FLOAT, GL_FALSE, 0, 0 );
 
+  m_vaoFlag = true;
+
+
 
   // link matrices with shader locations
   m_MVAddress = glGetUniformLocation( m_shader.getShaderProgram(), "MV" );
   m_MVPAddress = glGetUniformLocation( m_shader.getShaderProgram(), "MVP" );
   m_NAddress = glGetUniformLocation( m_shader.getShaderProgram(), "N" );
   m_timeAddress = glGetUniformLocation( m_shader.getShaderProgram(), "Time" );
+}
+
+
+
+void GLWindow::createVAO(float _verts, float _norms, float _amountData)
+{
+
+
+  // load vertices
+  glBindBuffer( GL_ARRAY_BUFFER, m_vbo );
+  glBufferData( GL_ARRAY_BUFFER, _amountData * sizeof(float), 0, GL_STATIC_DRAW );
+  glBufferSubData( GL_ARRAY_BUFFER, 0, _amountData * sizeof(float), &_verts);
+
+  // pass vertices to shader
+  GLint pos = glGetAttribLocation( m_shader.getShaderProgram(), "VertexPosition" );
+  glEnableVertexAttribArray( pos );
+  glVertexAttribPointer( pos, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+
+
+  // load normals
+  glBindBuffer( GL_ARRAY_BUFFER,	m_nbo );
+  glBufferData( GL_ARRAY_BUFFER, _amountData * sizeof(float), 0, GL_STATIC_DRAW );
+  glBufferSubData( GL_ARRAY_BUFFER, 0, _amountData * sizeof(float), &_norms );
+
+  // pass normals to shader
+  GLint n = glGetAttribLocation( m_shader.getShaderProgram(), "VertexNormal" );
+  glEnableVertexAttribArray( n );
+  glVertexAttribPointer( n, 3, GL_FLOAT, GL_FALSE, 0, 0 );
 
   m_vaoFlag = true;
 
 }
+
+
 
 //------------------------------------------------------------------------------------------------------------------------------
 
@@ -227,6 +269,40 @@ void GLWindow::updateOffset(double _offset)
     glVertexAttribPointer( n, 3, GL_FLOAT, GL_FALSE, 0, 0 );
 
 }
+//------------------------------------------------------------------------------------------------------------------------------
+
+void GLWindow::showBones()
+{
+      m_mesh->setBufferIndex( 0 );
+      m_amountVertexData = m_mesh->getAmountVertexData();
+
+
+        // load vertices
+        glBindBuffer( GL_ARRAY_BUFFER, m_vbo );
+        glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
+        glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m_mesh->getVertexData());
+
+        // pass vertices to shader
+        GLint pos = glGetAttribLocation( m_shader.getShaderProgram(), "VertexPosition" );
+        glEnableVertexAttribArray( pos );
+        glVertexAttribPointer( pos, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+
+        // load normals
+        glBindBuffer( GL_ARRAY_BUFFER,	m_nbo );
+        glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
+        glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m_mesh->getNormalsData() );
+
+        // pass normals to shader
+        GLint n = glGetAttribLocation( m_shader.getShaderProgram(), "VertexNormal" );
+        glEnableVertexAttribArray( n );
+        glVertexAttribPointer( n, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+
+        m_MV = glm::translate( m_MV, glm::vec3(-2.0f, -.0f, -20.0f) );
+
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+
 
 void GLWindow::generateNewGeometry()
 {
