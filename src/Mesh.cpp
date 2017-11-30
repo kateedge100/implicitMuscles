@@ -223,3 +223,64 @@ void Mesh::write(std::vector<float> const & _vertices, std::vector<float>const &
 }
 //----------------------------------------------------------------------------------------------------------------------
 
+void Mesh::writePly(std::vector<float> const & _vertices, std::vector<unsigned int>const & _faces, std::string _destination)
+{
+    std::ofstream out;
+    out.open(_destination);
+    out.clear();
+    out << _vertices.size()/3 << "\n"; // /3 because xyz
+    out << _faces.size()/3 << "\n";  // /3 because triangles
+
+    for(unsigned int i = 0; i < _vertices.size(); i+=3)
+    {
+        out << _vertices[i] << " " << _vertices[i+1] << " " << _vertices[i+2] << "\n";
+    }
+
+    for(unsigned int i = 0; i < _faces.size()/3; i += 3)
+    {
+        out << "3 " << _faces[i]+1 << " " << _faces[i+1]+1 << " " << _faces[i+2]+1 << "\n";
+    }
+}
+
+
+void Mesh::readmesh(char *filename){
+
+
+  FILE *in=NULL;
+  in = fopen(filename,"r");
+  int dV=0;
+  int dF=0;
+  int i;
+  int di=0;
+  int dj=0;
+  int dk=0;
+  double dx=0.0;
+  double dy=0.0;
+  double dz=0.0;
+  fscanf(in,"%d",&dV);
+  fscanf(in,"%d",&dF);
+
+  int numberV = dV;
+  int numberF = dF;
+
+  std::cout<<"Number of vertices "<<numberV<<"\n";
+
+  std::cout<<"Number of faces "<<numberF<<"\n";
+
+  //memoryallocate(dV,dF);
+  for(i=0;i<numberV;i++){
+    fscanf(in,"%lf %lf %lf",&dx,&dy,&dz);
+    //setPoint(i,dx,dy,dz);
+    std::cout<< "Vertices "<<dx<<dy<<dz<<"\n";
+  }
+  int val=3;
+  for(i=0;i<numberF;i++){
+
+    fscanf(in,"%d %d %d %d",&val,&di,&dj,&dk);
+    std::cout<< "Faces "<<val<<di<<dj<<dk<<"\n";
+
+ }
+
+  fclose(in);
+
+}

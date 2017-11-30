@@ -47,6 +47,10 @@ void GLWindow::initializeGL()
   m_meshes[4] = Mesh( "models/Asteroid.obj", "Asteroid" );
   m_mesh = & m_meshes[0];
 
+  Mesh *medialAxis = new Mesh();
+
+  medialAxis->readmesh("models/output.ply2");
+
   init();
   //m_MV = glm::translate( m_MV, glm::vec3(-2.0f, -.0f, -20.0f) );
   m_MV = glm::translate( m_MV, glm::vec3(0.0f, 0.0f, -2.0f) );

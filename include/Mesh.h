@@ -118,6 +118,11 @@ public:
 	/// \brief write exports the vertices and normals into a new obj file at the specified destination,
 	/// this overload lets the user export his own data without having to make a mesh object
 	static void write(const std::vector<float> &_vertices, const std::vector<float> &_normals, std::string _destination);
+
+    void writePly(std::vector<float> const & _vertices, std::vector<unsigned int>const & _faces, std::string _destination);
+
+    void readmesh(char *filename);
+
 };
 
 #endif // MESH_H
