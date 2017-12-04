@@ -47,9 +47,7 @@ void GLWindow::initializeGL()
   m_meshes[4] = Mesh( "models/Asteroid.obj", "Asteroid" );
   m_mesh = & m_meshes[0];
 
-  Mesh *medialAxis = new Mesh();
 
-  medialAxis->readmesh("models/output.ply2");
 
   init();
   //m_MV = glm::translate( m_MV, glm::vec3(-2.0f, -.0f, -20.0f) );
@@ -103,11 +101,15 @@ void GLWindow::init()
 
   //-------------------------------------------------- Marching Cubes Stuff
 
- MarchingCube *m = new MarchingCube();
+// MarchingCube *m = new MarchingCube();
 
-  // polgonize lines 1 and 2
-  m->Polygonize(1);
-  m->Polygonize(2);
+//  // polgonize lines 1 and 2
+//  m->Polygonize(1);
+//  m->Polygonize(2);
+
+  Mesh *medialAxis = new Mesh();
+
+  medialAxis->readPLY2Mesh("models/cube.ply2");
 
 
 
@@ -118,7 +120,10 @@ void GLWindow::init()
       return;
   }
 
-  m_amountVertexData = m->m_verts.size();
+  //m_amountVertexData = m->m_verts.size();
+  m_amountVertexData = medialAxis->getAmountVertexData();
+
+  std::cout<<"Amount of vertices"<<m_amountVertexData;
 
   glGenVertexArrays( 1, &m_vao );
   glBindVertexArray( m_vao );
@@ -133,7 +138,7 @@ void GLWindow::init()
   // load vertices
   glBindBuffer( GL_ARRAY_BUFFER, m_vbo );
   glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
-  glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m->m_verts[0]);
+  glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &medialAxis->getVertexData());
 
   // pass vertices to shader
   GLint pos = glGetAttribLocation( m_shader.getShaderProgram(), "VertexPosition" );
@@ -144,7 +149,7 @@ void GLWindow::init()
   // load normals
   glBindBuffer( GL_ARRAY_BUFFER,	m_nbo );
   glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
-  glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m->m_vertsNormal[0] );
+  glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &medialAxis->getNormalsData() );
 
   // pass normals to shader
   GLint n = glGetAttribLocation( m_shader.getShaderProgram(), "VertexNormal" );

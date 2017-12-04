@@ -243,7 +243,7 @@ void Mesh::writePly(std::vector<float> const & _vertices, std::vector<unsigned i
 }
 
 
-void Mesh::readmesh(char *filename){
+void Mesh::readPLY2Mesh(char *filename){
 
 
   FILE *in=NULL;
@@ -254,11 +254,16 @@ void Mesh::readmesh(char *filename){
   int di=0;
   int dj=0;
   int dk=0;
-  double dx=0.0;
-  double dy=0.0;
-  double dz=0.0;
+  float dx=0.0;
+  float dy=0.0;
+  float dz=0.0;
   fscanf(in,"%d",&dV);
   fscanf(in,"%d",&dF);
+
+  std::vector <glm::vec3> tempVerts;
+  std::vector <glm::vec3> tempNorm;
+
+
 
   int numberV = dV;
   int numberF = dF;
@@ -269,18 +274,67 @@ void Mesh::readmesh(char *filename){
 
   //memoryallocate(dV,dF);
   for(i=0;i<numberV;i++){
-    fscanf(in,"%lf %lf %lf",&dx,&dy,&dz);
+    fscanf(in,"%f %f %f",&dx,&dy,&dz);
     //setPoint(i,dx,dy,dz);
-    std::cout<< "Vertices "<<dx<<dy<<dz<<"\n";
+
+    //std::cout<< "Vertices "<<dx<<dy<<dz<<"\n";
+    glm::vec3 tmp = {dx,dy,dz};
+    tempVerts.push_back(tmp);
+
+    m_vertices.push_back(tempVerts[i][0]);
+    m_vertices.push_back(tempVerts[i][1]);
+    m_vertices.push_back(tempVerts[i][2]);
+
+    std::cout<< "Vertices "<<tempVerts[i][0]<<tempVerts[i][1]<<tempVerts[i][2]<<"\n";
+
+
   }
+
+  for(i=0;i<numberV*3;i+=3)
+  {
+      std::cout<< "Vertices Stored "<<m_vertices[i]<<m_vertices[i+1]<<m_vertices[i+2]<<"\n";
+
+  }
+
+
+
   int val=3;
   for(i=0;i<numberF;i++){
 
     fscanf(in,"%d %d %d %d",&val,&di,&dj,&dk);
-    std::cout<< "Faces "<<val<<di<<dj<<dk<<"\n";
+    //std::cout<< "Faces "<<val<<di<<dj<<dk<<"\n";
+//    tempFaces.push_back(tempVerts[di]);
+//    tempFaces.push_back(tempVerts[dy]);
+//    tempFaces.push_back(tempVerts[dz]);
+
+
+    //std::cout<< "Faces "<<tempVerts[di]<<tempVerts[dj]<<tempVerts[dk]<<"\n";
+
+    tempNorm.push_back(normalizeFace(tempVerts[di], tempVerts[dj], tempVerts[dk]));
+
+    m_normals.push_back(tempNorm[i][0]);
+    m_normals.push_back(tempNorm[i][1]);
+    m_normals.push_back(tempNorm[i][2]);
+
+
+    std::cout<< "Normals "<<tempNorm[i][0]<<tempNorm[i][1]<<tempNorm[i][2]<<"\n";
 
  }
 
   fclose(in);
 
+}
+
+glm::vec3 Mesh::normalizeFace(glm::vec3 _face1, glm::vec3 _face2, glm::vec3 _face3)
+{
+    glm::vec3 norm, vec1, vec2;
+    vec1 = _face2-_face1;
+    vec2 = _face3-_face1;
+
+    norm = glm::cross(vec1, vec2);
+    if(norm.length()>0.0)
+        norm = glm::normalize(norm);
+    else
+        printf("");
+    return norm;
 }

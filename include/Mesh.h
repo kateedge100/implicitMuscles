@@ -121,7 +121,9 @@ public:
 
     void writePly(std::vector<float> const & _vertices, std::vector<unsigned int>const & _faces, std::string _destination);
 
-    void readmesh(char *filename);
+    void readPLY2Mesh(char *filename);
+
+    glm::vec3 normalizeFace(glm::vec3 _face1, glm::vec3 _face2, glm::vec3 _face3);
 
 };
 
