@@ -281,21 +281,14 @@ void Mesh::readPLY2Mesh(char *filename){
     glm::vec3 tmp = {dx,dy,dz};
     tempVerts.push_back(tmp);
 
-    m_vertices.push_back(tempVerts[i][0]);
-    m_vertices.push_back(tempVerts[i][1]);
-    m_vertices.push_back(tempVerts[i][2]);
+//    m_vertices.push_back(tempVerts[i][0]);
+//    m_vertices.push_back(tempVerts[i][1]);
+//    m_vertices.push_back(tempVerts[i][2]);
 
     std::cout<< "Vertices "<<tempVerts[i][0]<<tempVerts[i][1]<<tempVerts[i][2]<<"\n";
 
 
   }
-
-  for(i=0;i<numberV*3;i+=3)
-  {
-      std::cout<< "Vertices Stored "<<m_vertices[i]<<m_vertices[i+1]<<m_vertices[i+2]<<"\n";
-
-  }
-
 
 
   int val=3;
@@ -308,19 +301,38 @@ void Mesh::readPLY2Mesh(char *filename){
 //    tempFaces.push_back(tempVerts[dz]);
 
 
-    //std::cout<< "Faces "<<tempVerts[di]<<tempVerts[dj]<<tempVerts[dk]<<"\n";
+    std::cout<< "Faces "<<tempVerts[di][0]<<tempVerts[di][1]<<tempVerts[di][2]
+             <<tempVerts[dj][0]<<tempVerts[dj][1]<<tempVerts[dj][2]
+             <<tempVerts[dk][0]<<tempVerts[dk][1]<<tempVerts[dk][2]<<"\n";
 
-    tempNorm.push_back(normalizeFace(tempVerts[di], tempVerts[dj], tempVerts[dk]));
+        m_vertices.push_back(tempVerts[di][0]);
+        m_vertices.push_back(tempVerts[di][1]);
+        m_vertices.push_back(tempVerts[di][2]);
 
-    m_normals.push_back(tempNorm[i][0]);
-    m_normals.push_back(tempNorm[i][1]);
-    m_normals.push_back(tempNorm[i][2]);
+        m_vertices.push_back(tempVerts[dj][0]);
+        m_vertices.push_back(tempVerts[dj][1]);
+        m_vertices.push_back(tempVerts[dj][2]);
+
+        m_vertices.push_back(tempVerts[dk][0]);
+        m_vertices.push_back(tempVerts[dk][1]);
+        m_vertices.push_back(tempVerts[dk][2]);
+
+      tempNorm.push_back(normalizeFace(tempVerts[di], tempVerts[dj], tempVerts[dk]));
+
+//    m_normals.push_back(tempNorm[i][0]);
+//    m_normals.push_back(tempNorm[i][1]);
+//    m_normals.push_back(tempNorm[i][2]);
 
 
     std::cout<< "Normals "<<tempNorm[i][0]<<tempNorm[i][1]<<tempNorm[i][2]<<"\n";
 
  }
 
+  for(i=0;i<numberV*3;i+=3)
+  {
+      std::cout<< "Vertices Stored "<<m_vertices[i]<<m_vertices[i+1]<<m_vertices[i+2]<<"\n";
+
+  }
   fclose(in);
 
 }

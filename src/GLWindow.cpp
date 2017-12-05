@@ -109,7 +109,9 @@ void GLWindow::init()
 
   Mesh *medialAxis = new Mesh();
 
-  medialAxis->readPLY2Mesh("models/cube.ply2");
+  medialAxis->readPLY2Mesh("models/output.ply2");
+
+  medialAxis->write(medialAxis->getVertices(), medialAxis->getNormals(), "cubeOutput.obj");
 
 
 
