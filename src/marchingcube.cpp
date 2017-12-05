@@ -204,16 +204,6 @@ bool MarchingCube::LoadVolumeFromFile(std::string _vol)
     return true;
 }
 
-void MarchingCube::createOffsetArray()
-{
-    for(int i = 0; i<10; i++)
-    {
-        m_offset = float(i);
-        Polygonize(1);
-        Polygonize(2);
-    }
-
-}
 
 std::vector <float> MarchingCube::Polygonize(int lineNo)
 {
@@ -806,6 +796,40 @@ glm::vec3 MarchingCube::computeTriangleNormal(TRIANGLE  &itr)
     else
         printf("");
     return norm;
+}
+
+void MarchingCube::createOffsetArray()
+{
+    OFFSET offsetArray;
+
+    // iterate through arrays of pointa
+    for(int i = 0; i < 10; i++)
+    {
+        // iterate through each array
+        for(int j = 0; j < m_nVerts; j++)
+        {
+            // offset set t 1-10
+            m_offset = i+1;
+
+            // polygonize lines
+            Polygonize(1);
+            Polygonize(2);
+
+            // add vertices of lines to offsetArray
+            offsetArray.v[j*i].x= m_verts[j*3];
+            offsetArray.v[j*i].y= m_verts[(j*3)+1];
+            offsetArray.v[j*i].z= m_verts[(j*3)+2];
+
+            // add normals of lines to offsetArray
+            offsetArray.n[j*i].x= m_vertsNormal[j*3];
+            offsetArray.n[j*i].y= m_vertsNormal[(j*3)+1];
+            offsetArray.n[j*i].z= m_vertsNormal[(j*3)+2];
+
+        }
+
+    }
+
+
 }
 
 

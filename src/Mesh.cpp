@@ -296,9 +296,7 @@ void Mesh::readPLY2Mesh(char *filename){
 
     fscanf(in,"%d %d %d %d",&val,&di,&dj,&dk);
     //std::cout<< "Faces "<<val<<di<<dj<<dk<<"\n";
-//    tempFaces.push_back(tempVerts[di]);
-//    tempFaces.push_back(tempVerts[dy]);
-//    tempFaces.push_back(tempVerts[dz]);
+
 
 
     std::cout<< "Faces "<<tempVerts[di][0]<<tempVerts[di][1]<<tempVerts[di][2]
@@ -330,9 +328,10 @@ void Mesh::readPLY2Mesh(char *filename){
 
   for(i=0;i<numberV*3;i+=3)
   {
-      std::cout<< "Vertices Stored "<<m_vertices[i]<<m_vertices[i+1]<<m_vertices[i+2]<<"\n";
+      //std::cout<< "Vertices Stored "<<m_vertices[i]<<m_vertices[i+1]<<m_vertices[i+2]<<"\n";
 
   }
+
   fclose(in);
 
 }

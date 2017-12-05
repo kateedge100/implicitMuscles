@@ -40,6 +40,12 @@ typedef struct {
    double val[8];
 } GRIDCELL;
 
+typedef struct {
+    glm::vec3 v[10];//v[10*m_nVerts];
+    glm::vec3 n[10];//n[10*m_nVerts];
+
+
+}OFFSET;
 
 class MarchingCube
 {
@@ -107,6 +113,8 @@ public:
     std::vector<float> m_offsetArray [10];
     //----------------------------------------------------------------------------------------------------------------------
     void createOffsetArray();
+    //----------------------------------------------------------------------------------------------------------------------
+
 
 
 

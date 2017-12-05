@@ -101,20 +101,6 @@ void GLWindow::init()
 
   //-------------------------------------------------- Marching Cubes Stuff
 
-// MarchingCube *m = new MarchingCube();
-
-//  // polgonize lines 1 and 2
-//  m->Polygonize(1);
-//  m->Polygonize(2);
-
-  Mesh *medialAxis = new Mesh();
-
-  medialAxis->readPLY2Mesh("models/output.ply2");
-
-  medialAxis->write(medialAxis->getVertices(), medialAxis->getNormals(), "cubeOutput.obj");
-
-
-
   // if we have already created a VBO just return.
   if(m_vaoFlag == true)
   {
@@ -122,10 +108,6 @@ void GLWindow::init()
       return;
   }
 
-  //m_amountVertexData = m->m_verts.size();
-  m_amountVertexData = medialAxis->getAmountVertexData();
-
-  std::cout<<"Amount of vertices"<<m_amountVertexData;
 
   glGenVertexArrays( 1, &m_vao );
   glBindVertexArray( m_vao );
@@ -133,9 +115,47 @@ void GLWindow::init()
   glGenBuffers( 1, &m_nbo );
 
 
-  //createVAO(m->m_verts[0], m->m_vertsNormal[0], m->m_verts.size() );
+  //createVAO(medialAxis->getVertexData(), medialAxis->getNormalsData(), medialAxis->getAmountVertexData() );
 
   //showBones();
+
+  // Implicit demo
+  //----------------------------------------------------------------------------------------------------
+
+//  MarchingCube *m = new MarchingCube();
+
+//    // polgonize lines 1 and 2
+//    m->Polygonize(1);
+//    m->Polygonize(2);
+
+//   m_amountVertexData = m->m_verts.size();
+
+//  // load vertices
+//  glBindBuffer( GL_ARRAY_BUFFER, m_vbo );
+//  glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
+//  glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m->m_verts[0]);
+
+//  // pass vertices to shader
+//  GLint pos = glGetAttribLocation( m_shader.getShaderProgram(), "VertexPosition" );
+//  glEnableVertexAttribArray( pos );
+//  glVertexAttribPointer( pos, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+
+
+//  // load normals
+//  glBindBuffer( GL_ARRAY_BUFFER,	m_nbo );
+//  glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
+//  glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m->m_vertsNormal[0] );
+
+  //----------------------------------------------------------------------------------------------------
+ // MEDIAL AXIS LOAD
+
+  Mesh *medialAxis = new Mesh();
+
+  medialAxis->readPLY2Mesh("models/maneki-neko.ply2");
+
+  medialAxis->write(medialAxis->getVertices(), medialAxis->getNormals(), "cubeOutput.obj");
+
+  m_amountVertexData = medialAxis->getAmountVertexData();
 
   // load vertices
   glBindBuffer( GL_ARRAY_BUFFER, m_vbo );
@@ -153,14 +173,14 @@ void GLWindow::init()
   glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
   glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &medialAxis->getNormalsData() );
 
+  //----------------------------------------------------------------------------------------------------
+
   // pass normals to shader
   GLint n = glGetAttribLocation( m_shader.getShaderProgram(), "VertexNormal" );
   glEnableVertexAttribArray( n );
   glVertexAttribPointer( n, 3, GL_FLOAT, GL_FALSE, 0, 0 );
 
   m_vaoFlag = true;
-
-
 
   // link matrices with shader locations
   m_MVAddress = glGetUniformLocation( m_shader.getShaderProgram(), "MV" );
