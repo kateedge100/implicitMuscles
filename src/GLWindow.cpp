@@ -40,7 +40,7 @@ void GLWindow::initializeGL()
   glClearColor( 0.5f, 0.5f, 0.5f, 1.0f );
   glViewport( 0, 0, devicePixelRatio(), devicePixelRatio() );
 
-  m_meshes[0] = Mesh( "models/bone.obj", "bone" );
+  m_meshes[0] = Mesh( "models/cube.obj", "bone" );
   m_meshes[1] = Mesh( "models/Face.obj", "Face" );
   m_meshes[2] = Mesh( "models/Suzanne.obj", "Suzanne" );
   m_meshes[3] = Mesh( "models/test2.obj", "weirdShape" );
@@ -119,9 +119,17 @@ void GLWindow::init()
 
   //showBones();
 
+//  std::vector <float> tmp = m_mesh->getFaces();
+
+//  for(int i = 0; i<tmp.size(); i++)
+//  {
+//      std::cout<<tmp[i];
+//  }
+
+  m_mesh->writePly(m_mesh->getVertices(), m_mesh->getFaces(),"cubeNew.ply2");
+
   // Implicit demo
   //----------------------------------------------------------------------------------------------------
-
 //  MarchingCube *m = new MarchingCube();
 
 //    // polgonize lines 1 and 2
@@ -151,7 +159,7 @@ void GLWindow::init()
 
   Mesh *medialAxis = new Mesh();
 
-  medialAxis->readPLY2Mesh("models/maneki-neko.ply2");
+  medialAxis->readPLY2Mesh("models/cubeConvert.ply2");
 
   medialAxis->write(medialAxis->getVertices(), medialAxis->getNormals(), "cubeOutput.obj");
 

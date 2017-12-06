@@ -41,6 +41,7 @@ Mesh::Mesh(std::string _address, std::string _name)
 	std::size_t iVertices = 0;
 	std::size_t iNormals = 0;
 	std::size_t iUvs = 0;
+    std::size_t iFaces = 0;
 
 	while (len > 0)
 	{
@@ -59,6 +60,8 @@ Mesh::Mesh(std::string _address, std::string _name)
 				tempVertices[i_tempVertices++] = std::stof(tempData[1]);
 				tempVertices[i_tempVertices++] = std::stof(tempData[2]);
 				tempVertices[i_tempVertices++] = std::stof(tempData[3]);
+
+
 
 				//std::cout <<"i: " << i_tempVertices << " size: " << tempVertices.size() << '\n';
 			}
@@ -90,9 +93,13 @@ Mesh::Mesh(std::string _address, std::string _name)
 			else if (tempData[0] == "f")
 			{
 
+
 				for (int i = 0; i < static_cast<int>(tempData.size()-1); ++i) // -1 to avoid overflow
 				{
 					tempFaces = Mesh::split(tempData[i+1], '/');
+
+
+
 
 					// takes the vertices in the right order and place them into a std::vector
 					if (iVertices == m_vertices.size())
@@ -103,6 +110,17 @@ Mesh::Mesh(std::string _address, std::string _name)
 					m_vertices[iVertices++] = tempVertices[((std::stoi(tempFaces[0])-1)*3)+1];
 					m_vertices[iVertices++] = tempVertices[((std::stoi(tempFaces[0])-1)*3)+2];
 
+                    m_faces.push_back((std::stoi(tempFaces[0])-1)*3);
+                    m_faces.push_back(((std::stoi(tempFaces[0])-1)*3)+1);
+                    m_faces.push_back(((std::stoi(tempFaces[0])-1)*3)+2);
+
+
+
+
+
+
+
+
 					if (i_tempUvs > 0)
 					{
 						// takes the uvs in the right order and place them into a std::vector
@@ -110,8 +128,10 @@ Mesh::Mesh(std::string _address, std::string _name)
 						{
 							m_uvs.resize(m_uvs.size()+1200);
 						}
-//						std::cout << tempFaces[0] << " " << tempFaces[1] << " " << tempFaces[2] <<'\n';
-						m_uvs[iUvs++] = tempUvs[(std::stoi(tempFaces[1])-1)*2];
+
+                        //std::cout << tempFaces[0] << " " << tempFaces[1] << " " << tempFaces[2] <<'\n';
+
+                        m_uvs[iUvs++] = tempUvs[(std::stoi(tempFaces[1])-1)*2];
 						m_uvs[iUvs++] = tempUvs[((std::stoi(tempFaces[1])-1)*2)+1];
 					}
 					// takes the normals in the right order and place them into a std::vector
@@ -303,6 +323,7 @@ void Mesh::readPLY2Mesh(char *filename){
              <<tempVerts[dj][0]<<tempVerts[dj][1]<<tempVerts[dj][2]
              <<tempVerts[dk][0]<<tempVerts[dk][1]<<tempVerts[dk][2]<<"\n";
 
+    // SHOUDLD BE TEMPVERTS[DI-1][0] AS IF DI = 1 SHOULD ACCESS TEMPVERTS[0]
         m_vertices.push_back(tempVerts[di][0]);
         m_vertices.push_back(tempVerts[di][1]);
         m_vertices.push_back(tempVerts[di][2]);

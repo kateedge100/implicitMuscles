@@ -38,6 +38,9 @@ private:
 	/// \brief m_normals is a std::vector containing the normals
 	std::vector<float> m_uvs;
 
+    /// \brief m_faces is a std::vector containing the faces
+    std::vector<unsigned int> m_faces;
+
 	/// \brief m_address is a string that contains the location of the file, for example "models/cube.obj"
 	std::vector<std::string> m_address;
 
@@ -86,6 +89,8 @@ public:
 	const std::vector<float> &getNormals() const { return m_normals; }
 
 	const std::vector<float> &getUVs() const { return m_uvs; }
+
+    const std::vector<unsigned int> &getFaces() const { return m_faces; }
 
 	/// \brief getVerticesCopy returns a copy of the vertices
 	std::vector<float> getVerticesCopy() const { return m_vertices; }
