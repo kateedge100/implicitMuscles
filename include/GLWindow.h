@@ -39,6 +39,7 @@ public slots:
     void generateNewGeometry();
     void updateOffset(double _offset);
     void showBones();
+    void showMuscles();
 
 protected:
   /// @brief  The following methods must be implimented in the sub class

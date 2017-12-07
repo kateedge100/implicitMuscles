@@ -41,7 +41,7 @@ void GLWindow::initializeGL()
   glViewport( 0, 0, devicePixelRatio(), devicePixelRatio() );
 
   m_meshes[0] = Mesh( "models/cube.obj", "bone" );
-  m_meshes[1] = Mesh( "models/Face.obj", "Face" );
+  m_meshes[1] = Mesh( "models/muscle.obj", "muscle" );
   m_meshes[2] = Mesh( "models/Suzanne.obj", "Suzanne" );
   m_meshes[3] = Mesh( "models/test2.obj", "weirdShape" );
   m_meshes[4] = Mesh( "models/Asteroid.obj", "Asteroid" );
@@ -117,20 +117,18 @@ void GLWindow::init()
 
   //createVAO(medialAxis->getVertexData(), medialAxis->getNormalsData(), medialAxis->getAmountVertexData() );
 
-  //showBones();
+  showBones();
 
-//  std::vector <float> tmp = m_mesh->getFaces();
 
-//  for(int i = 0; i<tmp.size(); i++)
-//  {
-//      std::cout<<tmp[i];
-//  }
+  //showMuscles();
 
-  m_mesh->writePly(m_mesh->getVertices(), m_mesh->getFaces(),"cubeNew.ply2");
+
 
   // Implicit demo
   //----------------------------------------------------------------------------------------------------
 //  MarchingCube *m = new MarchingCube();
+
+//   m->sdfMesh(m_mesh->getVertices());
 
 //    // polgonize lines 1 and 2
 //    m->Polygonize(1);
@@ -157,29 +155,29 @@ void GLWindow::init()
   //----------------------------------------------------------------------------------------------------
  // MEDIAL AXIS LOAD
 
-  Mesh *medialAxis = new Mesh();
+//  Mesh *medialAxis = new Mesh();
 
-  medialAxis->readPLY2Mesh("models/cubeConvert.ply2");
+//  medialAxis->readPLY2Mesh("models/output.ply2");
 
-  medialAxis->write(medialAxis->getVertices(), medialAxis->getNormals(), "cubeOutput.obj");
+//  medialAxis->write(medialAxis->getVertices(), medialAxis->getNormals(), "objOutput.obj");
 
-  m_amountVertexData = medialAxis->getAmountVertexData();
+//  m_amountVertexData = medialAxis->getAmountVertexData();
 
-  // load vertices
-  glBindBuffer( GL_ARRAY_BUFFER, m_vbo );
-  glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
-  glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &medialAxis->getVertexData());
+//  // load vertices
+//  glBindBuffer( GL_ARRAY_BUFFER, m_vbo );
+//  glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
+//  glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &medialAxis->getVertexData());
 
-  // pass vertices to shader
-  GLint pos = glGetAttribLocation( m_shader.getShaderProgram(), "VertexPosition" );
-  glEnableVertexAttribArray( pos );
-  glVertexAttribPointer( pos, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+//  // pass vertices to shader
+//  GLint pos = glGetAttribLocation( m_shader.getShaderProgram(), "VertexPosition" );
+//  glEnableVertexAttribArray( pos );
+//  glVertexAttribPointer( pos, 3, GL_FLOAT, GL_FALSE, 0, 0 );
 
 
-  // load normals
-  glBindBuffer( GL_ARRAY_BUFFER,	m_nbo );
-  glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
-  glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &medialAxis->getNormalsData() );
+//  // load normals
+//  glBindBuffer( GL_ARRAY_BUFFER,	m_nbo );
+//  glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
+//  glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &medialAxis->getNormalsData() );
 
   //----------------------------------------------------------------------------------------------------
 
@@ -312,6 +310,42 @@ void GLWindow::updateOffset(double _offset)
 
 void GLWindow::showBones()
 {
+      m_mesh->setBufferIndex( 0 );
+      m_amountVertexData = m_mesh->getAmountVertexData();
+
+      MarchingCube *m = new MarchingCube;
+      m->sdfMesh(m_mesh->getVertices());
+
+
+        // load vertices
+        glBindBuffer( GL_ARRAY_BUFFER, m_vbo );
+        glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
+        glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m_mesh->getVertexData());
+
+        // pass vertices to shader
+        GLint pos = glGetAttribLocation( m_shader.getShaderProgram(), "VertexPosition" );
+        glEnableVertexAttribArray( pos );
+        glVertexAttribPointer( pos, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+
+        // load normals
+        glBindBuffer( GL_ARRAY_BUFFER,	m_nbo );
+        glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
+        glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m_mesh->getNormalsData() );
+
+        // pass normals to shader
+        GLint n = glGetAttribLocation( m_shader.getShaderProgram(), "VertexNormal" );
+        glEnableVertexAttribArray( n );
+        glVertexAttribPointer( n, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+
+        m_MV = glm::translate( m_MV, glm::vec3(-2.0f, -.0f, -20.0f) );
+
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+
+void GLWindow::showMuscles()
+{
+      m_mesh = &m_meshes[1];
       m_mesh->setBufferIndex( 0 );
       m_amountVertexData = m_mesh->getAmountVertexData();
 

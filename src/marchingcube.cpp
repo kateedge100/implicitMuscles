@@ -11,6 +11,32 @@ MarchingCube::MarchingCube()
 
 }
 
+float MarchingCube::sdfMesh(std::vector <float> _verts)
+{
+
+    glm::vec3 triangleVerts[_verts.size()/3];
+
+    for(int i = 0; i < _verts.size(); i++)
+    {
+        //triangleVerts[i].x
+//        triangleVerts[i].y = _verts[(i*3)+1];
+//        triangleVerts[i].z = _verts[(i*3)+2];
+
+        //std::cout<<"Triangles "<<triangleVerts[i].x <<triangleVerts[i].y<<triangleVerts[i].z<<"\n";
+    }
+    for(std::vector<float>::const_iterator i = _verts.begin(); i != _verts.end(); i++)
+    {
+        std::cout<<"Verts "<<*i<<"\n";
+
+//        triangleVerts[i].x = _verts[i];
+//        triangleVerts[i].y = _verts[i+1];
+//        triangleVerts[i].z = _verts[i+2];
+    }
+
+
+
+}
+
 
 float MarchingCube::distanceToSegment(glm::vec3 a, glm::vec3 b, glm::vec3 pos)
 {
