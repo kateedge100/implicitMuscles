@@ -26,58 +26,108 @@ MarchingCube::MarchingCube(std::vector <float> _objVerts)
 // DOWSNT WORK USE https://www.geometrictools.com/Documentation/DistancePoint3Triangle3.pdf
 float MarchingCube::pointToTriangleDistance(glm::vec3 pos, glm::vec3 v1, glm::vec3 v2, glm::vec3 v3)
 {
-//        glm::vec3 edge0 = v2 - v1;
-//        glm::vec3 edge1 = v3 - v1;
-//        glm::vec3 D = v1 - pos;
+        glm::vec3 edge0 = v2 - v1;
+        glm::vec3 edge1 = v3 - v1;
+        glm::vec3 D = v1 - pos;
 
-//        float a = glm::dot(edge0,edge0);
-//        float b = glm::dot(edge0,edge1);
-//        float c = glm::dot(edge1,edge1);
-//        float d = glm::dot(edge0, D);
-//        float e = glm::dot(edge1, D);
-//        float f = glm::dot(D,D);
+        float a = glm::dot(edge0,edge0);
+        float b = glm::dot(edge0,edge1);
+        float c = glm::dot(edge1,edge1);
+        float d = glm::dot(edge0, D);
+        float e = glm::dot(edge1, D);
+        float f = glm::dot(D,D);
 
-//        float s = b ∗ e − c ∗ d ;
-//        float t = b ∗ d − a ∗ e ;
-//        d e t = a ∗ c − b ∗ b ;
-//        i f ( s + t <= d e t )
-//        {
-//        i f ( s < 0 )
-//        {
-//        i f ( t < 0 )
-//        {
-//        r e g i o n 4
-//        }
-//        e l s e
-//        {
-//        r e g i o n 3
-//        }
-//        }
-//        e l s e i f ( t < 0 )
-//        {
-//        r e g i o n 5
-//        }
-//        e l s e
-//        {
-//        r e g i o n 0
-//        }
-//        }
-//        e l s e
-//        {
-//        i f ( s < 0 )
-//        {
-//        r e g i o n 2
-//        }
-//        e l s e i f ( t < 0 )
-//        {
-//        r e g i o n 6
-//        }
-//        e l s e
-//        {
-//        r e g i o n 1
-//        }
-//        }
-return 2;
+        float s = (b * e)-(c * d);
+        float t = (b * d)-(a * e);
+        float det = (a * c)-(b * b);
+
+        float distance = 0;
+
+        if( s + t <= det )
+        {
+            if( s < 0 )
+            {
+                if( t < 0 )
+                {
+                    distance = region4();
+                }
+                else
+                {
+                    distance = region3();
+                }
+            }
+            else if( t < 0 )
+            {
+                distance = region5();
+            }
+            else
+            {
+                s /= det;
+                t /= det;
+            }
+        }
+        else
+        {
+            if( s < 0 )
+            {
+                s,t = region2(s,t,c,e);
+            }
+            else if( t < 0 )
+            {
+                distance = region6();
+            }
+            else
+            {
+                s,t = region1(s,t, a, b, c, d, e);
+            }
+        }
+
+return distance;
+
+}
+
+float MarchingCube::region1(float s, float t, float a, float b, float c, float d, float e)
+{
+    float numer = ( c + e ) - (b+d);
+    if(numer <= 0)
+    {
+        s = 0;
+    }
+    else
+    {
+        float denom = a-2 *b+c;
+
+        if(numer >= denom)
+        {
+            s = 1;
+        }
+        else
+        {
+            s = numer/denom;
+        }
+    }
+
+    return t = 1-s,s;
+
+
+}
+
+float MarchingCube::region2(float s, float t, float c, float e)
+{
+    s = 0;
+    if(e >= 0  )
+    {
+        t = 0;
+    }
+    else if(-e >=c)
+    {
+        t = 1;
+    }
+    else
+    {
+        t = -e / c;
+    }
+    return s, t;
 
 }
 
