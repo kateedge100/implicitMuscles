@@ -1,4 +1,9 @@
-#version 410
+#version 150                                          // Keeping you on the bleeding edge!
+#extension GL_EXT_gpu_shader4 : enable
+#extension GL_ARB_explicit_attrib_location : require
+#extension GL_ARB_explicit_uniform_location : require
+#extension GL_ARB_shading_language_420pack: enable
+
 
 // This is passed on from the vertex shader
 in vec3 FragmentPosition;

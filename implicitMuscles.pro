@@ -67,7 +67,7 @@ OBJECTS_DIR = obj
 MOC_DIR = moc
 UI_DIR = ui
 
-linux:LIBS += -lGL -lGLU -lGLEW -lCGAL
+linux:LIBS += -lGL -lGLU -lGLEW
 
 
 #DISTFILES +=

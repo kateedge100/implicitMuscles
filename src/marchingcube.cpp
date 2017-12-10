@@ -26,58 +26,58 @@ MarchingCube::MarchingCube(std::vector <float> _objVerts)
 // DOWSNT WORK USE https://www.geometrictools.com/Documentation/DistancePoint3Triangle3.pdf
 float MarchingCube::pointToTriangleDistance(glm::vec3 pos, glm::vec3 v1, glm::vec3 v2, glm::vec3 v3)
 {
-        glm::vec3 edge0 = v2 - v1;
-        glm::vec3 edge1 = v3 - v1;
-        glm::vec3 D = v1 - pos;
+//        glm::vec3 edge0 = v2 - v1;
+//        glm::vec3 edge1 = v3 - v1;
+//        glm::vec3 D = v1 - pos;
 
-        float a = glm::dot(edge0,edge0);
-        float b = glm::dot(edge0,edge1);
-        float c = glm::dot(edge1,edge1);
-        float d = glm::dot(edge0, D);
-        float e = glm::dot(edge1, D);
-        float f = glm::dot(D,D);
+//        float a = glm::dot(edge0,edge0);
+//        float b = glm::dot(edge0,edge1);
+//        float c = glm::dot(edge1,edge1);
+//        float d = glm::dot(edge0, D);
+//        float e = glm::dot(edge1, D);
+//        float f = glm::dot(D,D);
 
-        float s = b ∗ e − c ∗ d ;
-        float t = b ∗ d − a ∗ e ;
-        d e t = a ∗ c − b ∗ b ;
-        i f ( s + t <= d e t )
-        {
-        i f ( s < 0 )
-        {
-        i f ( t < 0 )
-        {
-        r e g i o n 4
-        }
-        e l s e
-        {
-        r e g i o n 3
-        }
-        }
-        e l s e i f ( t < 0 )
-        {
-        r e g i o n 5
-        }
-        e l s e
-        {
-        r e g i o n 0
-        }
-        }
-        e l s e
-        {
-        i f ( s < 0 )
-        {
-        r e g i o n 2
-        }
-        e l s e i f ( t < 0 )
-        {
-        r e g i o n 6
-        }
-        e l s e
-        {
-        r e g i o n 1
-        }
-        }
-
+//        float s = b ∗ e − c ∗ d ;
+//        float t = b ∗ d − a ∗ e ;
+//        d e t = a ∗ c − b ∗ b ;
+//        i f ( s + t <= d e t )
+//        {
+//        i f ( s < 0 )
+//        {
+//        i f ( t < 0 )
+//        {
+//        r e g i o n 4
+//        }
+//        e l s e
+//        {
+//        r e g i o n 3
+//        }
+//        }
+//        e l s e i f ( t < 0 )
+//        {
+//        r e g i o n 5
+//        }
+//        e l s e
+//        {
+//        r e g i o n 0
+//        }
+//        }
+//        e l s e
+//        {
+//        i f ( s < 0 )
+//        {
+//        r e g i o n 2
+//        }
+//        e l s e i f ( t < 0 )
+//        {
+//        r e g i o n 6
+//        }
+//        e l s e
+//        {
+//        r e g i o n 1
+//        }
+//        }
+return 2;
 
 }
 
@@ -396,7 +396,7 @@ bool MarchingCube::PrepareVolume(int lineFunc)
                 float value;
                 glm::vec3 pos = {x,y,z};
 
-                value = sdfMesh(pos);
+                //value = sdfMesh(pos);
 
 //                switch (lineFunc) {
 //                case 1: value = line1(x,y,z);
@@ -406,7 +406,7 @@ bool MarchingCube::PrepareVolume(int lineFunc)
 //                    break;
                 //}
 
-                //value =  unionOperation(line1(x,y,z), line2(x,y,z));
+                value =  unionOperation(line1(x,y,z), line2(x,y,z));
                 volumeData[i*volume_width*volume_height + j*volume_width + k] = value;
             }
         }
