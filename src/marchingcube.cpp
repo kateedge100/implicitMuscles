@@ -19,294 +19,248 @@ MarchingCube::MarchingCube(std::vector <float> _objVerts)
 
     m_objVerts.swap(_objVerts);
 
+    for(uint i = 0; i< m_objVerts.size(); i++)
+    {
+        //std::cout<<"Vert "<<m_objVerts[0]<<"\n";
+    }
+
 
 
 }
 
-// DOWSNT WORK USE https://www.geometrictools.com/Documentation/DistancePoint3Triangle3.pdf
-float MarchingCube::pointToTriangleDistance(glm::vec3 pos, glm::vec3 v1, glm::vec3 v2, glm::vec3 v3)
+// function taken from https://www.geometrictools.com/GTEngine/Include/Mathematics/GteDistPointTriangleExact.h
+float MarchingCube::DistancePointTriangle(glm::vec3 point, glm::vec3 v0, glm::vec3 v1, glm::vec3 v2)
 {
-        glm::vec3 edge0 = v2 - v1;
-        glm::vec3 edge1 = v3 - v1;
-        glm::vec3 D = v1 - pos;
+    glm::vec3 diff = point - v0;
+    glm::vec3 edge0 = v1 - v0;
+    glm::vec3 edge1 = v2 - v0;
+    float a00 = glm::dot(edge0, edge0);
+    float a01 = glm::dot(edge0, edge1);
+    float a11 = glm::dot(edge1, edge1);
+    float b0 = -glm::dot(diff, edge0);
+    float b1 = -glm::dot(diff, edge1);
+    float const zero = 0;
+    float const one = 1;
+    float det = a00 * a11 - a01 * a01;
+    float t0 = a01 * b1 - a11 * b0;
+    float t1 = a01 * b0 - a00 * b1;
 
-        float a = glm::dot(edge0,edge0);
-        float b = glm::dot(edge0,edge1);
-        float c = glm::dot(edge1,edge1);
-        float d = glm::dot(edge0, D);
-        float e = glm::dot(edge1, D);
-        float f = glm::dot(D,D);
-
-        float s = (b * e)-(c * d);
-        float t = (b * d)-(a * e);
-        float det = (a * c)-(b * b);
-
-        float distance = 0;
-
-        if( s + t <= det )
+    if (t0 + t1 <= det)
+    {
+        if (t0 < zero)
         {
-            if( s < 0 )
+            if (t1 < zero)  // region 4
             {
-                if( t < 0 )
+                if (b0 < zero)
                 {
-                    distance = region4();
-                }
-                else
-                {
-                    distance = region3();
-                }
-            }
-            else if( t < 0 )
-            {
-                distance = region5();
-            }
-            else
-            {
-                s /= det;
-                t /= det;
-            }
-        }
-        else
-        {
-            if( s < 0 )
-            {
-                s,t = region2(s,t,c,e);
-            }
-            else if( t < 0 )
-            {
-                distance = region6();
-            }
-            else
-            {
-                s,t = region1(s,t, a, b, c, d, e);
-            }
-        }
-
-return distance;
-
-}
-
-float MarchingCube::region1(float s, float t, float a, float b, float c, float d, float e)
-{
-    float numer = ( c + e ) - (b+d);
-    if(numer <= 0)
-    {
-        s = 0;
-    }
-    else
-    {
-        float denom = a-2 *b+c;
-
-        if(numer >= denom)
-        {
-            s = 1;
-        }
-        else
-        {
-            s = numer/denom;
-        }
-    }
-
-    return t = 1-s,s;
-
-
-}
-
-float MarchingCube::region2(float s, float t, float c, float e)
-{
-    s = 0;
-    if(e >= 0  )
-    {
-        t = 0;
-    }
-    else if(-e >=c)
-    {
-        t = 1;
-    }
-    else
-    {
-        t = -e / c;
-    }
-    return s, t;
-
-}
-
-// https://www.gamedev.net/forums/topic/552906-closest-point-on-triangle/
-/*float MarchingCube::pointToTriangleDistance(glm::vec3 pos, glm::vec3 v1, glm::vec3 v2, glm::vec3 v3)
-{
-    glm::vec3 edge0 = v2 - v1;
-        glm::vec3 edge1 = v3 - v1;
-        glm::vec3 v0 = v1 - pos;
-
-
-
-        float a = glm::dot(edge0, edge0 );
-        float b = glm::dot(edge0, edge1 );
-        float c = glm::dot(edge1, edge1 );
-        float d = glm::dot(edge0, v0 );
-        float e = glm::dot(edge1, v0 );
-
-        float det = a*c - b*b;
-        float s = b*e - c*d;
-        float t = b*d - a*e;
-
-        if ( s + t < det )
-        {
-            if ( s < 0.f )
-            {
-                if ( t < 0.f )
-                {
-                    if ( d < 0.f )
+                    t1 = zero;
+                    if (-b0 >= a00)  // V1
                     {
-                        s = glm::clamp( -d/a, 0.f, 1.f );
-                        t = 0.f;
+                        t0 = one;
                     }
-                    else
+                    else  // E01
                     {
-                        s = 0.f;
-                        t = glm::clamp( -e/c, 0.f, 1.f );
+                        t0 = -b0 / a00;
                     }
                 }
                 else
                 {
-                    s = 0.f;
-                    t = glm::clamp( -e/c, 0.f, 1.f );
+                    t0 = zero;
+                    if (b1 >= zero)  // V0
+                    {
+                        t1 = zero;
+                    }
+                    else if (-b1 >= a11)  // V2
+                    {
+                        t1 = one;
+                    }
+                    else  // E20
+                    {
+                        t1 = -b1 / a11;
+                    }
                 }
             }
-            else if ( t < 0.f )
+            else  // region 3
             {
-                s = glm::clamp( -d/a, 0.f, 1.f );
-                t = 0.f;
-            }
-            else
-            {
-                float invDet = 1.f / det;
-                s *= invDet;
-                t *= invDet;
+                t0 = zero;
+                if (b1 >= zero)  // V0
+                {
+                    t1 = zero;
+                }
+                else if (-b1 >= a11)  // V2
+                {
+                    t1 = one;
+                }
+                else  // E20
+                {
+                    t1 = -b1 / a11;
+                }
             }
         }
-        else
+        else if (t1 < zero)  // region 5
         {
-            if ( s < 0.f )
+            t1 = zero;
+            if (b0 >= zero)  // V0
             {
-                float tmp0 = b+d;
-                float tmp1 = c+e;
-                if ( tmp1 > tmp0 )
-                {
-                    float numer = tmp1 - tmp0;
-                    float denom = a-2*b+c;
-                    s = glm::clamp( numer/denom, 0.f, 1.f );
-                    t = 1-s;
-                }
-                else
-                {
-                    t = glm::clamp( -e/c, 0.f, 1.f );
-                    s = 0.f;
-                }
+                t0 = zero;
             }
-            else if ( t < 0.f )
+            else if (-b0 >= a00)  // V1
             {
-                if ( a+d > b+e )
+                t0 = one;
+            }
+            else  // E01
+            {
+                t0 = -b0 / a00;
+            }
+        }
+        else  // region 0, interior
+        {
+            float invDet = one / det;
+            t0 *= invDet;
+            t1 *= invDet;
+        }
+    }
+    else
+    {
+        float tmp0, tmp1, numer, denom;
+
+        if (t0 < zero)  // region 2
+        {
+            tmp0 = a01 + b0;
+            tmp1 = a11 + b1;
+            if (tmp1 > tmp0)
+            {
+                numer = tmp1 - tmp0;
+                denom = a00 - ((float)2)*a01 + a11;
+                if (numer >= denom)  // V1
                 {
-                    float numer = c+e-b-d;
-                    float denom = a-2*b+c;
-                    s = glm::clamp( numer/denom, 0.f, 1.f );
-                    t = 1-s;
+                    t0 = one;
+                    t1 = zero;
                 }
-                else
+                else  // E12
                 {
-                    s = glm::clamp( -e/c, 0.f, 1.f );
-                    t = 0.f;
+                    t0 = numer / denom;
+                    t1 = one - t0;
                 }
             }
             else
             {
-                float numer = c+e-b-d;
-                float denom = a-2*b+c;
-                s = glm::clamp( numer/denom, 0.f, 1.f );
-                t = 1.f - s;
+                t0 = zero;
+                if (tmp1 <= zero)  // V2
+                {
+                    t1 = one;
+                }
+                else if (b1 >= zero)  // V0
+                {
+                    t1 = zero;
+                }
+                else  // E20
+                {
+                    t1 = -b1 / a11;
+                }
             }
         }
+        else if (t1 < zero)  // region 6
+        {
+            tmp0 = a01 + b1;
+            tmp1 = a00 + b0;
+            if (tmp1 > tmp0)
+            {
+                numer = tmp1 - tmp0;
+                denom = a00 - ((float)2)*a01 + a11;
+                if (numer >= denom)  // V2
+                {
+                    t1 = one;
+                    t0 = zero;
+                }
+                else  // E12
+                {
+                    t1 = numer / denom;
+                    t0 = one - t1;
+                }
+            }
+            else
+            {
+                t1 = zero;
+                if (tmp1 <= zero)  // V1
+                {
+                    t0 = one;
+                }
+                else if (b0 >= zero)  // V0
+                {
+                    t0 = zero;
+                }
+                else  // E01
+                {
+                    t0 = -b0 / a00;
+                }
+            }
+        }
+        else  // region 1
+        {
+            numer = a11 + b1 - a01 - b0;
+            if (numer <= zero)  // V2
+            {
+                t0 = zero;
+                t1 = one;
+            }
+            else
+            {
+                denom = a00 - ((float)2)*a01 + a11;
+                if (numer >= denom)  // V1
+                {
+                    t0 = one;
+                    t1 = zero;
+                }
+                else  // 12
+                {
+                    t0 = numer / denom;
+                    t1 = one - t0;
+                }
+            }
+        }
+    }
 
-        glm::vec3 result = v1 + s * edge0 + t * edge1;
+    glm::vec3 result;
+    result.x = one - t0 - t1;
+    result.y = t0;
+    result.z = t1;
+    glm::vec3 closest = v0 + t0 * edge0 + t1 * edge1;
+    diff = point - closest;
+    float sqrDistance = glm::dot(diff, diff);
+    return sqrDistance;
+}
 
-        return sqrt((result.x*result.x) + (result.y*result.y) + (result.z*result.z));
-
-}*/
 
 float MarchingCube::sdfMesh( glm::vec3 pos)
 {
-    //std::cout<< "FINDING MIN DISTANCE"<<"\n";
-
-
-//    for(int i = 0; i<m_objVerts.size(); i++)
-//    {
-//        //std::cout<<"verts "<<m_objVerts[i];
-//    }
-
-
-
-
+    // pass m_objVerts std::vector to glm:vec3
     glm::vec3 triangleVerts[m_objVerts.size()/3];
 
-    //glm::vec3 triangleNorm[_verts.size()/3];
-
-    for(int i = 0; i < m_objVerts.size()/3; i++)
+    for(uint i = 0; i < m_objVerts.size()/3; i++)
     {
-
-
         triangleVerts[i].x = m_objVerts[(i*3)];
         triangleVerts[i].y = m_objVerts[(i*3)+1];
         triangleVerts[i].z = m_objVerts[(i*3)+2];
-
-        //std::cout<<"Triangle Vert"<<triangleVerts[i].x <<triangleVerts[i].y<<triangleVerts[i].z<<"\n";
-
-
-
     }
 
-//    for( int i = 0; i < _verts.size()/3; i++)
-//    {
-//        triangleNorm[i] = computeTriangleNormal(triangleVerts[i*3],triangleVerts[(i*3)+1],triangleVerts[(i*3)+2]);
-
-//        std::cout<<"Triangle Norm "<<triangleNorm[i].x<<triangleNorm[i].y<<triangleNorm[i].z<<"\n";
-
-//    }
-
-//    for(std::vector<float>::const_iterator i = _verts.begin(); i != _verts.end(); i++)
-//    {
-//        std::cout<<"Verts "<<*i<<"\n";
-
-//    }
-
-//    // Find closest vertex to pos
+    // Find closest vertex to pos
     float dist = 0;
 
-    for(uint i = 0; i<m_objVerts.size()/3; i++)
+    // divided by 9 as triangleVerts a third the size of m_objVerts and then a third less faces then verts
+    for(uint i = 0; i<m_objVerts.size()/9; i++)
     {
-
-        float tmpDist = pointToTriangleDistance(pos,triangleVerts[i*3],triangleVerts[(i*3)+1], triangleVerts[(i*3)+2]);
-
-        //        float tmpDist = sqrt((triangleVerts[i].x-pos.x)*(triangleVerts[i].x-pos.x) +
-//                             (triangleVerts[i].y-pos.y)*(triangleVerts[i].y-pos.y) +
-//                             (triangleVerts[i].z-pos.z)*(triangleVerts[i].z-pos.z));
-        std::cout<<"Min Distance "<<dist<<"\n";
+        float tmpDist = DistancePointTriangle(pos, triangleVerts[i*3],triangleVerts[(i*3)+1], triangleVerts[(i*3)+2]);
 
         if(dist == 0 || tmpDist<dist)
         {
             dist = tmpDist;
-            //std::cout<<"New Min Distance "<<dist<<"\n";
-        }
 
+        }
 
     }
 
-    //std::cout<<"Min Distance "<<dist<<"\n";
-
     return dist - m_offset;
-
-
-
 }
 
 
@@ -399,7 +353,7 @@ float MarchingCube::getSphereValue(float x, float y, float z)
 
 
 // Creates volume on grid from implicit function
-bool MarchingCube::PrepareVolume(int lineFunc)
+bool MarchingCube::PrepareVolume()
 {
 
 
@@ -446,7 +400,7 @@ bool MarchingCube::PrepareVolume(int lineFunc)
                 float value;
                 glm::vec3 pos = {x,y,z};
 
-                //value = sdfMesh(pos);
+                value = sdfMesh(pos);
 
 //                switch (lineFunc) {
 //                case 1: value = line1(x,y,z);
@@ -456,7 +410,7 @@ bool MarchingCube::PrepareVolume(int lineFunc)
 //                    break;
                 //}
 
-                value =  unionOperation(line1(x,y,z), line2(x,y,z));
+                //value =  unionOperation(line1(x,y,z), line2(x,y,z));
                 volumeData[i*volume_width*volume_height + j*volume_width + k] = value;
             }
         }
@@ -506,13 +460,13 @@ bool MarchingCube::LoadVolumeFromFile(std::string _vol)
 }
 
 
-std::vector <float> MarchingCube::Polygonize(int lineNo)
+std::vector <float> MarchingCube::Polygonize()
 {
 
     //LoadVolumeFromFile(std::string("mri.raw"));
 
     // Prepare the implicit volume ready for marching cubes to be applied
-    PrepareVolume(lineNo);
+    PrepareVolume();
 
 
     VertData    d;
@@ -1127,8 +1081,8 @@ void MarchingCube::createOffsetArray()
             m_offset = i+1;
 
             // polygonize lines
-            Polygonize(1);
-            Polygonize(2);
+            Polygonize();
+
 
             // add vertices of lines to offsetArray
             offsetArray.v[j*i].x= m_verts[j*3];
