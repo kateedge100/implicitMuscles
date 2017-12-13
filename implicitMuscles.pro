@@ -43,7 +43,9 @@ HEADERS += include/MainWindow.h \
            include/Mesh.h \
            include/Scene.h \
            include/Buffer.h \
-    include/marchingcube.h
+    include/marchingcube.h \
+    include/abstractOctree.h \
+    include/implicitoctree.h
 
 SOURCES += src/main.cpp \
            src/MainWindow.cpp \
@@ -54,7 +56,8 @@ SOURCES += src/main.cpp \
            src/Mesh.cpp \
            src/Scene.cpp \
            src/Buffer.cpp \
-           src/marchingcube.cpp
+           src/marchingcube.cpp \
+    src/implicitoctree.cpp
 
 OTHER_FILES += shaders/* \
                models/* \
