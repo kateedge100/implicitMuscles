@@ -42,7 +42,7 @@ void GLWindow::initializeGL()
 
   m_meshes[0] = Mesh( "models/cube.obj", "bone" );
   m_meshes[1] = Mesh( "models/muscle.obj", "muscle" );
-  m_meshes[2] = Mesh( "models/Suzanne.obj", "Suzanne" );
+  m_meshes[2] = Mesh( "models/bone.obj", "Suzanne" );
   m_meshes[3] = Mesh( "models/test2.obj", "weirdShape" );
   m_meshes[4] = Mesh( "models/Asteroid.obj", "Asteroid" );
   m_mesh = & m_meshes[0];
@@ -128,11 +128,7 @@ void GLWindow::init()
   //----------------------------------------------------------------------------------------------------
   MarchingCube *m = new MarchingCube(m_mesh->getVertices());
 
-   //m->sdfMesh(m_mesh->getVertices());
-
-    // polgonize lines 1 and 2
     m->Polygonize();
-    //m->Polygonize(2);
 
    m_amountVertexData = m->m_verts.size();
 
@@ -310,12 +306,13 @@ void GLWindow::updateOffset(double _offset)
 
 void GLWindow::showBones()
 {
+      m_mesh = &m_meshes[2];
       m_mesh->setBufferIndex( 0 );
       m_amountVertexData = m_mesh->getAmountVertexData();
 
-      MarchingCube *m = new MarchingCube;
+      //MarchingCube *m = new MarchingCube;
       //m->sdfMesh(m_mesh->getVertices());
-      m->PrepareVolume();
+      //m->PrepareVolume();
 
 
         // load vertices

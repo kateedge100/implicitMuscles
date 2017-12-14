@@ -332,7 +332,19 @@ float MarchingCube::line2(float x, float y, float z)
     float line1_distance = distanceToLine1(x,y,z);
 
 
-    float bound = std::max(std::min((line2_distance - m_offset) - (line1_distance - m_offset), line2_distance), -line1_distance);
+    float bound = std::max(
+                std::min( //union with the object itself
+                    (line2_distance - m_offset) - (line1_distance - m_offset) // pairs' part
+                         , line2_distance), //the object
+                -line1_distance //dynamic, only 1 here
+                );
+
+    // for 3 dynamic and 2 static
+    // float dynamic_pairs = std::max ((line1_distance - m_offset) - (line2_distance - m_offset), (line1_distance - m_offset) - (line3_distance - m_offset));
+    // float dynamic_original = std::min(line2_distance, line3_distance);
+    // float static_original = std::min(bone_distance1, bone_distance2);
+    // float bound = std::min(std::max(std::max(dynamic_pairs, -dynamic_original), -static_original), line1_distance);
+
     float r = 0.;
     if (bound < 0.)
     {
