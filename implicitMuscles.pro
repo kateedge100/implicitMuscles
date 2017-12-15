@@ -45,7 +45,8 @@ HEADERS += include/MainWindow.h \
            include/Buffer.h \
     include/marchingcube.h \
     include/abstractOctree.h \
-    include/implicitoctree.h
+    include/implicitoctree.h \
+
 
 SOURCES += src/main.cpp \
            src/MainWindow.cpp \

@@ -3,11 +3,13 @@
 
 
 
+
 MarchingCube::MarchingCube()
 {
     isolevel = 0.8;
 
     m_offset = 0.0;
+
 
 }
 
