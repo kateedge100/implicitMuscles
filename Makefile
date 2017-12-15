@@ -39,7 +39,7 @@ DISTNAME      = ImplicitMuscles1.0.0
 DISTDIR = /home/i7426159/Desktop/Research/implicitMuscle/obj/ImplicitMuscles1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-rpath,/opt/Qt5.9.0/5.9/gcc_64/lib
-LIBS          = $(SUBLIBS) -lGLU -lGLEW -L/opt/Qt5.9.0/5.9/gcc_64/lib -lQt5OpenGL -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lpthread 
+LIBS          = $(SUBLIBS) -lGLU -lGLEW -L ./lib/ -lsdf-lite-linuxgcc-mt -L/opt/Qt5.9.0/5.9/gcc_64/lib -lQt5OpenGL -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lpthread 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -267,7 +267,8 @@ DIST          = shaders/implicitmuscle.glsl \
 		include/Buffer.h \
 		include/marchingcube.h \
 		include/abstractOctree.h \
-		include/implicitoctree.h src/main.cpp \
+		include/implicitoctree.h \
+		include/signed_distance_field_from_mesh.hpp src/main.cpp \
 		src/MainWindow.cpp \
 		src/GLWindow.cpp \
 		src/Camera.cpp \
@@ -675,7 +676,7 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /opt/Qt5.9.0/5.9/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents include/MainWindow.h include/GLWindow.h include/Camera.h include/TrackballCamera.h include/Shader.h include/Mesh.h include/Scene.h include/Buffer.h include/marchingcube.h include/abstractOctree.h include/implicitoctree.h $(DISTDIR)/
+	$(COPY_FILE) --parents include/MainWindow.h include/GLWindow.h include/Camera.h include/TrackballCamera.h include/Shader.h include/Mesh.h include/Scene.h include/Buffer.h include/marchingcube.h include/abstractOctree.h include/implicitoctree.h include/signed_distance_field_from_mesh.hpp $(DISTDIR)/
 	$(COPY_FILE) --parents src/main.cpp src/MainWindow.cpp src/GLWindow.cpp src/Camera.cpp src/TrackballCamera.cpp src/Shader.cpp src/Mesh.cpp src/Scene.cpp src/Buffer.cpp src/marchingcube.cpp src/implicitoctree.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ui/mainwindow.ui $(DISTDIR)/
 

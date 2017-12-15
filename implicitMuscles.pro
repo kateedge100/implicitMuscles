@@ -46,6 +46,7 @@ HEADERS += include/MainWindow.h \
     include/marchingcube.h \
     include/abstractOctree.h \
     include/implicitoctree.h \
+    include/signed_distance_field_from_mesh.hpp
 
 
 SOURCES += src/main.cpp \
@@ -71,7 +72,7 @@ OBJECTS_DIR = obj
 MOC_DIR = moc
 UI_DIR = ui
 
-linux:LIBS += -lGL -lGLU -lGLEW
+linux:LIBS += -lGL -lGLU -lGLEW -L ./lib/ -lsdf-lite-linuxgcc-mt
 
 
 #DISTFILES +=

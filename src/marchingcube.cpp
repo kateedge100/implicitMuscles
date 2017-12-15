@@ -1,6 +1,6 @@
 #include "marchingcube.h"
 #include "Mesh.h"
-
+#include "signed_distance_field_from_mesh.hpp"
 
 
 
@@ -11,7 +11,10 @@ MarchingCube::MarchingCube()
     m_offset = 0.0;
 
 
+
 }
+
+
 
 MarchingCube::MarchingCube(std::vector <float> _objVerts)
 {
@@ -414,7 +417,23 @@ bool MarchingCube::PrepareVolume()
                 float value;
                 glm::vec3 pos = {x,y,z};
 
-                value = sdfMesh(pos);
+                //value = sdfMesh(pos);
+
+                typedef sdf::signed_distance_field_from_mesh mesh;
+
+                mesh obj;
+
+                if (!obj.load_from_file("models/cube.obj"))
+                        return false;
+
+                obj.load_from_file("models/cube.obj");
+
+                const float signeddistance = obj(x,y,z);
+
+                value = signeddistance;
+
+                std::cout<<"The signed distance to the object is: "<< signeddistance <<std::endl;
+
 
 //                switch (lineFunc) {
 //                case 1: value = line1(x,y,z);
