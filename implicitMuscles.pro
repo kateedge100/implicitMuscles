@@ -32,7 +32,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 INCLUDEPATH += $$PWD/include \
                $$PWD/ui \
-               $$PWD/../glm \
+               $$PWD/glm \
                $$PWD/shaders
 
 HEADERS += include/MainWindow.h \
@@ -44,7 +44,6 @@ HEADERS += include/MainWindow.h \
            include/Scene.h \
            include/Buffer.h \
     include/marchingcube.h \
-    include/abstractOctree.h \
     include/implicitoctree.h \
     include/signed_distance_field_from_mesh.hpp
 
@@ -58,8 +57,7 @@ SOURCES += src/main.cpp \
            src/Mesh.cpp \
            src/Scene.cpp \
            src/Buffer.cpp \
-           src/marchingcube.cpp \
-    src/implicitoctree.cpp
+           src/marchingcube.cpp
 
 OTHER_FILES += shaders/* \
                models/* \
@@ -69,7 +67,6 @@ FORMS += ui/mainwindow.ui
 
 UI_HEADERS_DIR = ui
 OBJECTS_DIR = obj
-MOC_DIR = moc
 UI_DIR = ui
 
 linux:LIBS += -lGL -lGLU -lGLEW -L ./lib/ -lsdf-lite-linuxgcc-mt

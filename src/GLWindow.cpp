@@ -126,11 +126,21 @@ void GLWindow::init()
 
   // Implicit demo
   //----------------------------------------------------------------------------------------------------
-  MarchingCube *m = new MarchingCube(m_mesh->getVertices());
+  MarchingCube *m = new MarchingCube(3,0);
 
-    m->Polygonize();
+  //m->m_obj[0].load_from_file("models/cube1.obj");
+  //m->m_obj[1].load_from_file("models/cube2.obj");
+  //m->m_obj[2].load_from_file("models/cube3.obj");
 
-   m_amountVertexData = m->m_verts.size();
+  m->addMesh(1,"models/cube1.obj");
+  m->addMesh(2,"models/cube2.obj");
+  m->addMesh(3,"models/cube3.obj");
+
+  m->Polygonize(1);
+  m->Polygonize(2);
+  m->Polygonize(3);
+
+  m_amountVertexData = m->m_verts.size();
 
   // load vertices
   glBindBuffer( GL_ARRAY_BUFFER, m_vbo );
@@ -267,12 +277,21 @@ void GLWindow::renderScene()
 
 void GLWindow::updateOffset(double _offset)
 {
-    MarchingCube *m = new MarchingCube(m_mesh->getVertices());
+    MarchingCube *m = new MarchingCube(3,0);
+
+    //m->m_obj[0].load_from_file("models/cube1.obj");
+    //m->m_obj[1].load_from_file("models/cube2.obj");
+    //m->m_obj[2].load_from_file("models/cube3.obj");
+
+    m->addMesh(1,"models/cube1.obj");
+    m->addMesh(2,"models/cube2.obj");
+    m->addMesh(3,"models/cube3.obj");
 
     m->m_offset= _offset;
 
-    m->Polygonize();
-    //m->Polygonize(2);
+    m->Polygonize(1);
+    m->Polygonize(2);
+    m->Polygonize(3);
 
 
 

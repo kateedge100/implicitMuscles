@@ -1,376 +1,200 @@
 #include "marchingcube.h"
 #include "Mesh.h"
-#include "signed_distance_field_from_mesh.hpp"
 
 
-
-MarchingCube::MarchingCube()
+MarchingCube::MarchingCube(int noDynamic, int noStatic)
 {
-    isolevel = 0.8;
 
-    m_offset = 0.0;
+    m_noDynamic = noDynamic;
+
+    m_noStatic = noStatic;
+
+
+
+
+
+
+
+
+
 
 
 
 }
 
 
-
-MarchingCube::MarchingCube(std::vector <float> _objVerts)
+void MarchingCube::addMesh(int _id, const char* _meshPath)
 {
-    isolevel = 0.8;
 
-    m_offset = 0.0;
+    if (!m_dynObj[_id-1].load_from_file(_meshPath))
+            std::cerr<<_meshPath<< " NOT FOUND";
 
-    m_objVerts.swap(_objVerts);
-
-    for(uint i = 0; i< m_objVerts.size(); i++)
-    {
-        //std::cout<<"Vert "<<m_objVerts[0]<<"\n";
-    }
-
-
-
-}
-
-// function taken from https://www.geometrictools.com/GTEngine/Include/Mathematics/GteDistPointTriangleExact.h
-float MarchingCube::DistancePointTriangle(glm::vec3 point, glm::vec3 v0, glm::vec3 v1, glm::vec3 v2)
-{
-    glm::vec3 diff = point - v0;
-    glm::vec3 edge0 = v1 - v0;
-    glm::vec3 edge1 = v2 - v0;
-    float a00 = glm::dot(edge0, edge0);
-    float a01 = glm::dot(edge0, edge1);
-    float a11 = glm::dot(edge1, edge1);
-    float b0 = -glm::dot(diff, edge0);
-    float b1 = -glm::dot(diff, edge1);
-    float const zero = 0;
-    float const one = 1;
-    float det = a00 * a11 - a01 * a01;
-    float t0 = a01 * b1 - a11 * b0;
-    float t1 = a01 * b0 - a00 * b1;
-
-    if (t0 + t1 <= det)
-    {
-        if (t0 < zero)
-        {
-            if (t1 < zero)  // region 4
-            {
-                if (b0 < zero)
-                {
-                    t1 = zero;
-                    if (-b0 >= a00)  // V1
-                    {
-                        t0 = one;
-                    }
-                    else  // E01
-                    {
-                        t0 = -b0 / a00;
-                    }
-                }
-                else
-                {
-                    t0 = zero;
-                    if (b1 >= zero)  // V0
-                    {
-                        t1 = zero;
-                    }
-                    else if (-b1 >= a11)  // V2
-                    {
-                        t1 = one;
-                    }
-                    else  // E20
-                    {
-                        t1 = -b1 / a11;
-                    }
-                }
-            }
-            else  // region 3
-            {
-                t0 = zero;
-                if (b1 >= zero)  // V0
-                {
-                    t1 = zero;
-                }
-                else if (-b1 >= a11)  // V2
-                {
-                    t1 = one;
-                }
-                else  // E20
-                {
-                    t1 = -b1 / a11;
-                }
-            }
-        }
-        else if (t1 < zero)  // region 5
-        {
-            t1 = zero;
-            if (b0 >= zero)  // V0
-            {
-                t0 = zero;
-            }
-            else if (-b0 >= a00)  // V1
-            {
-                t0 = one;
-            }
-            else  // E01
-            {
-                t0 = -b0 / a00;
-            }
-        }
-        else  // region 0, interior
-        {
-            float invDet = one / det;
-            t0 *= invDet;
-            t1 *= invDet;
-        }
-    }
     else
     {
-        float tmp0, tmp1, numer, denom;
-
-        if (t0 < zero)  // region 2
-        {
-            tmp0 = a01 + b0;
-            tmp1 = a11 + b1;
-            if (tmp1 > tmp0)
-            {
-                numer = tmp1 - tmp0;
-                denom = a00 - ((float)2)*a01 + a11;
-                if (numer >= denom)  // V1
-                {
-                    t0 = one;
-                    t1 = zero;
-                }
-                else  // E12
-                {
-                    t0 = numer / denom;
-                    t1 = one - t0;
-                }
-            }
-            else
-            {
-                t0 = zero;
-                if (tmp1 <= zero)  // V2
-                {
-                    t1 = one;
-                }
-                else if (b1 >= zero)  // V0
-                {
-                    t1 = zero;
-                }
-                else  // E20
-                {
-                    t1 = -b1 / a11;
-                }
-            }
-        }
-        else if (t1 < zero)  // region 6
-        {
-            tmp0 = a01 + b1;
-            tmp1 = a00 + b0;
-            if (tmp1 > tmp0)
-            {
-                numer = tmp1 - tmp0;
-                denom = a00 - ((float)2)*a01 + a11;
-                if (numer >= denom)  // V2
-                {
-                    t1 = one;
-                    t0 = zero;
-                }
-                else  // E12
-                {
-                    t1 = numer / denom;
-                    t0 = one - t1;
-                }
-            }
-            else
-            {
-                t1 = zero;
-                if (tmp1 <= zero)  // V1
-                {
-                    t0 = one;
-                }
-                else if (b0 >= zero)  // V0
-                {
-                    t0 = zero;
-                }
-                else  // E01
-                {
-                    t0 = -b0 / a00;
-                }
-            }
-        }
-        else  // region 1
-        {
-            numer = a11 + b1 - a01 - b0;
-            if (numer <= zero)  // V2
-            {
-                t0 = zero;
-                t1 = one;
-            }
-            else
-            {
-                denom = a00 - ((float)2)*a01 + a11;
-                if (numer >= denom)  // V1
-                {
-                    t0 = one;
-                    t1 = zero;
-                }
-                else  // 12
-                {
-                    t0 = numer / denom;
-                    t1 = one - t0;
-                }
-            }
-        }
+        m_dynObj[_id-1].load_from_file(_meshPath);
     }
 
-    glm::vec3 result;
-    result.x = one - t0 - t1;
-    result.y = t0;
-    result.z = t1;
-    glm::vec3 closest = v0 + t0 * edge0 + t1 * edge1;
-    diff = point - closest;
-    float sqrDistance = glm::dot(diff, diff);
-    return sqrDistance;
+
 }
 
 
-float MarchingCube::sdfMesh( glm::vec3 pos)
-{
-    // pass m_objVerts std::vector to glm:vec3
-    glm::vec3 triangleVerts[m_objVerts.size()/3];
 
-    for(uint i = 0; i < m_objVerts.size()/3; i++)
+
+//float MarchingCube::sdfMesh( glm::vec3 pos)
+//{
+//    // pass m_objVerts std::vector to glm:vec3
+//    glm::vec3 triangleVerts[m_objVerts.size()/3];
+
+//    for(uint i = 0; i < m_objVerts.size()/3; i++)
+//    {
+//        triangleVerts[i].x = m_objVerts[(i*3)];
+//        triangleVerts[i].y = m_objVerts[(i*3)+1];
+//        triangleVerts[i].z = m_objVerts[(i*3)+2];
+//    }
+
+//    // Find closest vertex to pos
+//    float dist = 0;
+
+//    // divided by 9 as triangleVerts a third the size of m_objVerts and then a third less faces then verts
+//    for(uint i = 0; i<m_objVerts.size()/9; i++)
+//    {
+//        float tmpDist = DistancePointTriangle(pos, triangleVerts[i*3],triangleVerts[(i*3)+1], triangleVerts[(i*3)+2]);
+
+//        if(dist == 0 || tmpDist<dist)
+//        {
+//            dist = tmpDist;
+
+//        }
+
+//    }
+
+//    return dist - m_offset;
+//}
+
+float MarchingCube::staticObj(glm::vec3 pos)
+{
+
+}
+
+float MarchingCube::offsetMesh(glm::vec3 pos, int objNo)
+{
+
+
+
+    float * src = NULL;
+
+    src = new float[m_noDynamic];
+
+    float * ub = NULL;
+    ub = new float[m_noDynamic];
+
+    for(int i = 0; i<m_noDynamic; i++)
     {
-        triangleVerts[i].x = m_objVerts[(i*3)];
-        triangleVerts[i].y = m_objVerts[(i*3)+1];
-        triangleVerts[i].z = m_objVerts[(i*3)+2];
+        src[i] = 0;
+        ub[i] = 0;
     }
 
-    // Find closest vertex to pos
-    float dist = 0;
 
-    // divided by 9 as triangleVerts a third the size of m_objVerts and then a third less faces then verts
-    for(uint i = 0; i<m_objVerts.size()/9; i++)
+    //Alocate Muscle to variables, src[0] , must be current muscle
+
+    // Current Muscle
+    src[0] = m_dynObj[objNo-1](pos.x,pos.y,pos.z);
+
+    ub[0] = src[0]-m_offset;
+
+    int j = 1;
+    for(int i = 0; i < m_noDynamic; i++)
     {
-        float tmpDist = DistancePointTriangle(pos, triangleVerts[i*3],triangleVerts[(i*3)+1], triangleVerts[(i*3)+2]);
-
-        if(dist == 0 || tmpDist<dist)
+        if( i != objNo-1)
         {
-            dist = tmpDist;
 
+
+            src[j] = m_dynObj[i](pos.x,pos.y,pos.z);
+            ub[j] = src[j] - m_offset;
+            j++;
         }
 
     }
 
-    return dist - m_offset;
-}
 
 
-float MarchingCube::distanceToSegment(glm::vec3 a, glm::vec3 b, glm::vec3 pos)
-{
-    glm::vec3 p = pos;
-    glm::vec3 pa = p - a;
-    glm::vec3 ba = b - a;
-    if(dot(a-b,a-b) == 0.0) return 1.0;
-
-    float h = glm::clamp( dot(pa,ba) / dot(ba,ba), 0.0f, 1.0f );
-
-    return length( pa - ba*h);
-}
-
-float MarchingCube::distanceToLine1(float x, float y, float z)
-{
-    glm::vec3 pos= {x,y,z};
-    float distance = std::min(distanceToSegment(glm::vec3(-10.0, 3.0, 0.0), glm::vec3(-5.0, 0.0, 0.0), pos),
-                         distanceToSegment(glm::vec3(-5.0, 0.0, 0.0), glm::vec3(-1.0, 5.0, 0.0),pos));
 
 
-    distance = std::min(distance,distanceToSegment(glm::vec3(-1.0, 5.0, 0.0), glm::vec3(1.0, 2.0, 0.0),pos));
+    float dyn;
+    float oth;
+    float sta;
+    float bound;
 
-    return distance;
+    float r = 0;
 
-}
-
-float MarchingCube::distanceToLine2(float x, float y, float z)
-{
-    glm::vec3 pos= {x,y,z};
-    float distance = std::min(distanceToSegment(glm::vec3(0.0, -3.0, 0.0), glm::vec3(6.0, 2.0, 0.0), pos),
-                         distanceToSegment(glm::vec3(6.0, 2.0, 0.0), glm::vec3(8.0, 5.0, 0.0),pos));
-
-
-    distance = std::min(distance,distanceToSegment(glm::vec3(8.0, 5.0, 0.0), glm::vec3(10.0, 5.0, 0.0),pos));
-
-    return distance;
-
-}
-
-float MarchingCube::line1(float x, float y, float z)
-{
+    // formula based on number of muscles input
+    switch (m_noDynamic) {
+    case 1:
 
 
-    float line2_distance = distanceToLine2(x,y,z);
-    float line1_distance = distanceToLine1(x,y,z);
 
 
-    float bound = std::max(std::min((line1_distance - m_offset) - (line2_distance - m_offset), line1_distance), -line2_distance);
-    float r = 0.;
-    if (bound < 0.)
-    {
-        float fa = abs(bound/0.1);
-        r = fa/(fa+1.0);
+        return src[0] - m_offset;
+        break;
+
+    case 2:
+
+
+        bound = glm::max(glm::min((ub[0]-ub[1]),src[0]),-src[1]);
+
+
+        if(bound <0.0)
+        {
+            float fa = abs(bound/0.1);
+            r = fa/(fa + 1.0);
+        }
+
+        return src[0] - (m_offset*r);
+        break;
+    case 3:
+
+
+
+
+
+        dyn = glm::max(ub[0]-ub[1], ub[0]-ub[2]);
+        oth = glm::min(src[1],src[2]);
+        sta = staticObj(pos);
+
+        if (m_noStatic == 0)
+        {
+           bound = glm::max(glm::min(dyn, src[0]), -oth);
+        }
+
+        else
+        {
+            bound = glm::max(glm::min(dyn, src[0]), -glm::min(oth,sta));
+        }
+
+
+
+        if(bound <0.0)
+        {
+            float fa = abs(bound/0.1);
+            r = fa/(fa + 1.0);
+        }
+
+        return src[0] - (m_offset*r);
+        break;
+
+    default:
+        break;
     }
 
 
+    delete src;
+    delete ub;
 
-    return line1_distance-m_offset*r;
 
 }
-
-float MarchingCube::line2(float x, float y, float z)
-{
-
-
-    float line2_distance = distanceToLine2(x,y,z);
-    float line1_distance = distanceToLine1(x,y,z);
-
-
-    float bound = std::max(
-                std::min( //union with the object itself
-                    (line2_distance - m_offset) - (line1_distance - m_offset) // pairs' part
-                         , line2_distance), //the object
-                -line1_distance //dynamic, only 1 here
-                );
-
-    // for 3 dynamic and 2 static
-    // float dynamic_pairs = std::max ((line1_distance - m_offset) - (line2_distance - m_offset), (line1_distance - m_offset) - (line3_distance - m_offset));
-    // float dynamic_original = std::min(line2_distance, line3_distance);
-    // float static_original = std::min(bone_distance1, bone_distance2);
-    // float bound = std::min(std::max(std::max(dynamic_pairs, -dynamic_original), -static_original), line1_distance);
-
-    float r = 0.;
-    if (bound < 0.)
-    {
-        float fa = abs(bound/0.1);
-        r = fa/(fa+1.0);
-    }
-
-
-
-    return line2_distance-m_offset*r;
-
-}
-// Implicit Sphere
-float MarchingCube::getSphereValue(float x, float y, float z)
-{
-    return ((x-0)*(x-0) + y*y + z*z - 81.0f);
-}
-
 
 // Creates volume on grid from implicit function
-bool MarchingCube::PrepareVolume()
+bool MarchingCube::PrepareVolume(int meshNo)
 {
 
 
@@ -404,6 +228,8 @@ bool MarchingCube::PrepareVolume()
     disp[2] = dims[2]/static_cast<float>(volume_depth);
 
 
+
+
     for (uint i = 0; i < volume_width; i++)
     {
         float x = bbox_min[0] + disp[0]*static_cast<float>(i);
@@ -419,20 +245,11 @@ bool MarchingCube::PrepareVolume()
 
                 //value = sdfMesh(pos);
 
-                typedef sdf::signed_distance_field_from_mesh mesh;
 
-                mesh obj;
 
-                if (!obj.load_from_file("models/cube.obj"))
-                        return false;
+                value = offsetMesh(pos, meshNo);
 
-                obj.load_from_file("models/cube.obj");
-
-                const float signeddistance = obj(x,y,z);
-
-                value = signeddistance;
-
-                std::cout<<"The signed distance to the object is: "<< signeddistance <<std::endl;
+                //std::cout<<"The signed distance to the object is: "<< signeddistance <<std::endl;
 
 
 //                switch (lineFunc) {
@@ -452,54 +269,19 @@ bool MarchingCube::PrepareVolume()
 }
 
 
-//// code taken from Xiasong
-bool MarchingCube::LoadVolumeFromFile(std::string _vol)
-{
-    std::ifstream in(_vol.c_str(), std::ifstream::binary);
-    if (in.is_open() != true)
-    {
-        std::cout<<"FILE NOT FOUND !!!! "<<_vol.c_str()<<"\n";
-        return false;
-    }
-    // read in the volume data 200x160x160, 1 byte per voxel
-    volume_width = 200;
-    volume_height = 160;
-    volume_depth = 160;
-    unsigned int volume_size = volume_width*volume_height*volume_depth;
-    char *volData = new char[volume_size];
-    in.read(volData, volume_size);
 
-    // compute the minimum and maximum value of the volume
-    unsigned char minVolumeData;
-    unsigned char maxVolumeData;
-    minVolumeData=maxVolumeData=volData[0];
-    for(unsigned int i = 1; i<volume_size; i++)
-    {
-        if(minVolumeData>volData[i]) minVolumeData = volData[i];
-        if(maxVolumeData<volData[i]) maxVolumeData = volData[i];
-    }
-
-    // normalize volume value into [0.0, 1.0]
-    volumeData = new float[volume_size];
-    float dim =maxVolumeData - minVolumeData;
-    for(unsigned int i = 1; i<volume_size; i++)
-    {
-        volumeData[i]=((float)volData[i]-minVolumeData)/(float)dim;
-    }
-
-    delete volData;
-    in.close();
-    return true;
-}
-
-
-std::vector <float> MarchingCube::Polygonize()
+std::vector <float> MarchingCube::Polygonize(int modelNo)
 {
 
     //LoadVolumeFromFile(std::string("mri.raw"));
 
     // Prepare the implicit volume ready for marching cubes to be applied
-    PrepareVolume();
+
+
+
+
+    PrepareVolume(modelNo);
+
 
 
     VertData    d;
@@ -598,7 +380,7 @@ std::vector <float> MarchingCube::Polygonize()
 
         }
 
-     //Mesh::write(m_verts,m_vertsNormal, "brain.obj");
+     Mesh::write(m_verts,m_vertsNormal, "outputDynamic.obj");
      std::cout<<"Object Created!";
 
 
@@ -1114,7 +896,7 @@ void MarchingCube::createOffsetArray()
             m_offset = i+1;
 
             // polygonize lines
-            Polygonize();
+            Polygonize(0);
 
 
             // add vertices of lines to offsetArray

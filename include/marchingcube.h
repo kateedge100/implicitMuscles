@@ -16,6 +16,7 @@
 #include <QResizeEvent>
 #include <QEvent>
 
+#include "signed_distance_field_from_mesh.hpp"
 
 
 // a simple structure to hold our vertex data
@@ -51,9 +52,9 @@ class MarchingCube
 {
 
 public:
-    MarchingCube();
-    // for if offsetting about mesh
-    MarchingCube(std::vector<float> _objVerts);
+
+    MarchingCube(int noDynamic, int noStatic);
+
     ~MarchingCube();
 
     double isolevel;
@@ -78,7 +79,7 @@ public:
     float           *volumeData;
     unsigned int m_volume_size;
     //----------------------------------------------------------------------------------------------------------------------
-    std::vector <float> Polygonize();
+    std::vector <float> Polygonize(int modelNo);
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief The number of vertices in the object
     //----------------------------------------------------------------------------------------------------------------------
@@ -90,7 +91,7 @@ public:
     //----------------------------------------------------------------------------------------------------------------------
     glm::vec3 computeTriangleNormal(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3);
     //----------------------------------------------------------------------------------------------------------------------
-    bool PrepareVolume();
+    bool PrepareVolume(int meshNo);
     //----------------------------------------------------------------------------------------------------------------------
     float getSphereValue(float x, float y, float z);
     //----------------------------------------------------------------------------------------------------------------------
@@ -123,6 +124,19 @@ public:
     //----------------------------------------------------------------------------------------------------------------------
     float DistancePointTriangle(glm::vec3 point, glm::vec3 v0, glm::vec3 v1, glm::vec3 v2);
     //----------------------------------------------------------------------------------------------------------------------
+
+    typedef sdf::signed_distance_field_from_mesh mesh;
+
+    int m_noOfMesh = 0;
+    int m_noDynamic = 0;
+    int m_noStatic = 0;
+
+    mesh m_dynObj[4];
+
+    float offsetMesh(glm::vec3 pos, int objNo);
+    float staticObj(glm::vec3 pos);
+
+    void addMesh(int _id, const char *_meshPath);
 
 
 
