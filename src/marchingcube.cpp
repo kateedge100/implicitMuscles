@@ -9,30 +9,35 @@ MarchingCube::MarchingCube(int noDynamic, int noStatic)
 
     m_noStatic = noStatic;
 
-
-
-
-
-
-
-
-
-
-
-
 }
 
 
-void MarchingCube::addMesh(int _id, const char* _meshPath)
+void MarchingCube::addMesh(int _id, const char* _meshPath, bool _static)
 {
+    if(_static == false)
+    {
+        if (!m_dynObj[_id-1].load_from_file(_meshPath))
+                std::cerr<<_meshPath<< " NOT FOUND";
 
-    if (!m_dynObj[_id-1].load_from_file(_meshPath))
-            std::cerr<<_meshPath<< " NOT FOUND";
+        else
+        {
+            m_dynObj[_id-1].load_from_file(_meshPath);
+        }
+    }
 
     else
     {
-        m_dynObj[_id-1].load_from_file(_meshPath);
+        if (!m_staticObj[_id-1].load_from_file(_meshPath))
+                std::cerr<<_meshPath<< " NOT FOUND";
+
+        else
+        {
+            m_staticObj[_id-1].load_from_file(_meshPath);
+        }
+
     }
+
+
 
 
 }
@@ -71,15 +76,9 @@ void MarchingCube::addMesh(int _id, const char* _meshPath)
 //    return dist - m_offset;
 //}
 
-float MarchingCube::staticObj(glm::vec3 pos)
+
+float MarchingCube::offsetMesh(glm::vec3 pos, int objNo, bool _static)
 {
-
-}
-
-float MarchingCube::offsetMesh(glm::vec3 pos, int objNo)
-{
-
-
 
     float * src = NULL;
 
@@ -93,6 +92,7 @@ float MarchingCube::offsetMesh(glm::vec3 pos, int objNo)
         src[i] = 0;
         ub[i] = 0;
     }
+
 
 
     //Alocate Muscle to variables, src[0] , must be current muscle
@@ -132,15 +132,45 @@ float MarchingCube::offsetMesh(glm::vec3 pos, int objNo)
     case 1:
 
 
+        if (m_noStatic == 0)
+        {
+            return src[0] - m_offset;
+        }
+        else
+        {
+            sta = m_staticObj[0](pos.x,pos.y,pos.z);
+            //std::cout<<"Dynamic single";
+            bound = glm::max(src[0],-sta);
+
+            if(bound <0.0)
+            {
+                float fa = abs(bound/0.1);
+                r = fa/(fa + 1.0);
+            }
+
+            return src[0] - (m_offset*r);
+        }
 
 
-        return src[0] - m_offset;
+
         break;
 
     case 2:
 
 
-        bound = glm::max(glm::min((ub[0]-ub[1]),src[0]),-src[1]);
+        dyn = (ub[0]-ub[1]);
+        oth = src[1];
+        sta = m_staticObj[0](pos.x,pos.y,pos.z);
+
+        if (m_noStatic == 0)
+        {
+
+            bound = glm::max(glm::min(dyn,src[0]),-oth);
+        }
+        else
+        {
+            bound = glm::max(glm::min(dyn,src[0]),-glm::min(oth,sta));
+        }
 
 
         if(bound <0.0)
@@ -159,7 +189,7 @@ float MarchingCube::offsetMesh(glm::vec3 pos, int objNo)
 
         dyn = glm::max(ub[0]-ub[1], ub[0]-ub[2]);
         oth = glm::min(src[1],src[2]);
-        sta = staticObj(pos);
+        sta = m_staticObj[0](pos.x,pos.y,pos.z);
 
         if (m_noStatic == 0)
         {
@@ -168,6 +198,7 @@ float MarchingCube::offsetMesh(glm::vec3 pos, int objNo)
 
         else
         {
+            std::cout<<"Static Object Bound";
             bound = glm::max(glm::min(dyn, src[0]), -glm::min(oth,sta));
         }
 
@@ -194,14 +225,14 @@ float MarchingCube::offsetMesh(glm::vec3 pos, int objNo)
 }
 
 // Creates volume on grid from implicit function
-bool MarchingCube::PrepareVolume(int meshNo)
+bool MarchingCube::PrepareVolume(int meshNo, bool _static)
 {
 
 
 
-    volume_width = 100;
-    volume_height = 100;
-    volume_depth = 100;
+    volume_width = 200;
+    volume_height = 200;
+    volume_depth = 200;
 
     m_volume_size = volume_width*volume_height*volume_depth;
 
@@ -246,8 +277,17 @@ bool MarchingCube::PrepareVolume(int meshNo)
                 //value = sdfMesh(pos);
 
 
+                if(_static == false)
+                {
+                    value = offsetMesh(pos, meshNo, _static);
+                }
+                else
+                {
 
-                value = offsetMesh(pos, meshNo);
+                    value = m_staticObj[meshNo-1](x,y,z);
+                }
+
+
 
                 //std::cout<<"The signed distance to the object is: "<< signeddistance <<std::endl;
 
@@ -270,7 +310,7 @@ bool MarchingCube::PrepareVolume(int meshNo)
 
 
 
-std::vector <float> MarchingCube::Polygonize(int modelNo)
+std::vector <float> MarchingCube::Polygonize(int modelNo, bool _static)
 {
 
     //LoadVolumeFromFile(std::string("mri.raw"));
@@ -280,7 +320,7 @@ std::vector <float> MarchingCube::Polygonize(int modelNo)
 
 
 
-    PrepareVolume(modelNo);
+    PrepareVolume(modelNo, _static);
 
 
 
@@ -896,7 +936,7 @@ void MarchingCube::createOffsetArray()
             m_offset = i+1;
 
             // polygonize lines
-            Polygonize(0);
+            Polygonize(0, false);
 
 
             // add vertices of lines to offsetArray

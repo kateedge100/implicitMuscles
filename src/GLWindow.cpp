@@ -126,19 +126,25 @@ void GLWindow::init()
 
   // Implicit demo
   //----------------------------------------------------------------------------------------------------
-  MarchingCube *m = new MarchingCube(3,0);
+  MarchingCube *m = new MarchingCube(2,1);
 
   //m->m_obj[0].load_from_file("models/cube1.obj");
   //m->m_obj[1].load_from_file("models/cube2.obj");
   //m->m_obj[2].load_from_file("models/cube3.obj");
 
-  m->addMesh(1,"models/cube1.obj");
-  m->addMesh(2,"models/cube2.obj");
-  m->addMesh(3,"models/cube3.obj");
+  // dynamic
+  m->addMesh(1,"models/muscle1.obj", false);
+  m->addMesh(2,"models/muscle2.obj", false);
 
-  m->Polygonize(1);
-  m->Polygonize(2);
-  m->Polygonize(3);
+  // static
+  m->addMesh(1,"models/bone.obj", true);
+
+  // dynamic
+  m->Polygonize(1, false);
+  m->Polygonize(2, false);
+
+  // static
+  m->Polygonize(1, true);
 
   m_amountVertexData = m->m_verts.size();
 
@@ -277,21 +283,27 @@ void GLWindow::renderScene()
 
 void GLWindow::updateOffset(double _offset)
 {
-    MarchingCube *m = new MarchingCube(3,0);
+    MarchingCube *m = new MarchingCube(2,1);
 
     //m->m_obj[0].load_from_file("models/cube1.obj");
     //m->m_obj[1].load_from_file("models/cube2.obj");
     //m->m_obj[2].load_from_file("models/cube3.obj");
 
-    m->addMesh(1,"models/cube1.obj");
-    m->addMesh(2,"models/cube2.obj");
-    m->addMesh(3,"models/cube3.obj");
+    // dynamic
+    m->addMesh(1,"models/muscle1.obj", false);
+    m->addMesh(2,"models/muscle2.obj", false);
+
+    // static
+    m->addMesh(1,"models/bone.obj", true);
 
     m->m_offset= _offset;
 
-    m->Polygonize(1);
-    m->Polygonize(2);
-    m->Polygonize(3);
+    // dynamic
+    m->Polygonize(1, false);
+    m->Polygonize(2, false);
+
+    // static
+    m->Polygonize(1, true);
 
 
 

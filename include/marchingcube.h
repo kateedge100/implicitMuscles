@@ -79,7 +79,7 @@ public:
     float           *volumeData;
     unsigned int m_volume_size;
     //----------------------------------------------------------------------------------------------------------------------
-    std::vector <float> Polygonize(int modelNo);
+    std::vector <float> Polygonize(int modelNo, bool _static);
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief The number of vertices in the object
     //----------------------------------------------------------------------------------------------------------------------
@@ -91,7 +91,7 @@ public:
     //----------------------------------------------------------------------------------------------------------------------
     glm::vec3 computeTriangleNormal(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3);
     //----------------------------------------------------------------------------------------------------------------------
-    bool PrepareVolume(int meshNo);
+    bool PrepareVolume(int meshNo, bool _static);
     //----------------------------------------------------------------------------------------------------------------------
     float getSphereValue(float x, float y, float z);
     //----------------------------------------------------------------------------------------------------------------------
@@ -132,11 +132,12 @@ public:
     int m_noStatic = 0;
 
     mesh m_dynObj[4];
+    mesh m_staticObj[4];
 
-    float offsetMesh(glm::vec3 pos, int objNo);
+    float offsetMesh(glm::vec3 pos, int objNo, bool _static);
     float staticObj(glm::vec3 pos);
 
-    void addMesh(int _id, const char *_meshPath);
+    void addMesh(int _id, const char *_meshPath, bool _static);
 
 
 

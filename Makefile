@@ -36,7 +36,7 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = ImplicitMuscles1.0.0
-DISTDIR = /home/i7426159/Desktop/Research/implicitMuscle/obj/ImplicitMuscles1.0.0
+DISTDIR = /home/i7426159/Desktop/Research/implicitMuscles/obj/ImplicitMuscles1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-rpath,/opt/Qt5.9.0/5.9/gcc_64/lib
 LIBS          = $(SUBLIBS) -lGLU -lGLEW -L ./lib/ -lsdf-lite-linuxgcc-mt -L/opt/Qt5.9.0/5.9/gcc_64/lib -lQt5OpenGL -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lpthread 
@@ -1054,7 +1054,7 @@ moc_MainWindow.cpp: /opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/QMainWindow \
 		include/MainWindow.h \
 		moc_predefs.h \
 		/opt/Qt5.9.0/5.9/gcc_64/bin/moc
-	/opt/Qt5.9.0/5.9/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/opt/Qt5.9.0/5.9/gcc_64/mkspecs/linux-g++ -I/home/i7426159/Desktop/Research/implicitMuscle -I/home/i7426159/Desktop/Research/implicitMuscle/include -I/home/i7426159/Desktop/Research/implicitMuscle/ui -I/home/i7426159/Desktop/Research/implicitMuscle/glm -I/home/i7426159/Desktop/Research/implicitMuscle/shaders -I/opt/Qt5.9.0/5.9/gcc_64/include -I/opt/Qt5.9.0/5.9/gcc_64/include/QtOpenGL -I/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets -I/opt/Qt5.9.0/5.9/gcc_64/include/QtGui -I/opt/Qt5.9.0/5.9/gcc_64/include/QtCore -I/usr/include/c++/4.8.5 -I/usr/include/c++/4.8.5/x86_64-redhat-linux -I/usr/include/c++/4.8.5/backward -I/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include -I/usr/local/include -I/usr/include include/MainWindow.h -o moc_MainWindow.cpp
+	/opt/Qt5.9.0/5.9/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/opt/Qt5.9.0/5.9/gcc_64/mkspecs/linux-g++ -I/home/i7426159/Desktop/Research/implicitMuscles -I/home/i7426159/Desktop/Research/implicitMuscles/include -I/home/i7426159/Desktop/Research/implicitMuscles/ui -I/home/i7426159/Desktop/Research/implicitMuscles/glm -I/home/i7426159/Desktop/Research/implicitMuscles/shaders -I/opt/Qt5.9.0/5.9/gcc_64/include -I/opt/Qt5.9.0/5.9/gcc_64/include/QtOpenGL -I/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets -I/opt/Qt5.9.0/5.9/gcc_64/include/QtGui -I/opt/Qt5.9.0/5.9/gcc_64/include/QtCore -I/usr/include/c++/4.8.5 -I/usr/include/c++/4.8.5/x86_64-redhat-linux -I/usr/include/c++/4.8.5/backward -I/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include -I/usr/local/include -I/usr/include include/MainWindow.h -o moc_MainWindow.cpp
 
 moc_GLWindow.cpp: include/Shader.h \
 		include/TrackballCamera.h \
@@ -1394,7 +1394,7 @@ moc_GLWindow.cpp: include/Shader.h \
 		include/GLWindow.h \
 		moc_predefs.h \
 		/opt/Qt5.9.0/5.9/gcc_64/bin/moc
-	/opt/Qt5.9.0/5.9/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/opt/Qt5.9.0/5.9/gcc_64/mkspecs/linux-g++ -I/home/i7426159/Desktop/Research/implicitMuscle -I/home/i7426159/Desktop/Research/implicitMuscle/include -I/home/i7426159/Desktop/Research/implicitMuscle/ui -I/home/i7426159/Desktop/Research/implicitMuscle/glm -I/home/i7426159/Desktop/Research/implicitMuscle/shaders -I/opt/Qt5.9.0/5.9/gcc_64/include -I/opt/Qt5.9.0/5.9/gcc_64/include/QtOpenGL -I/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets -I/opt/Qt5.9.0/5.9/gcc_64/include/QtGui -I/opt/Qt5.9.0/5.9/gcc_64/include/QtCore -I/usr/include/c++/4.8.5 -I/usr/include/c++/4.8.5/x86_64-redhat-linux -I/usr/include/c++/4.8.5/backward -I/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include -I/usr/local/include -I/usr/include include/GLWindow.h -o moc_GLWindow.cpp
+	/opt/Qt5.9.0/5.9/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/opt/Qt5.9.0/5.9/gcc_64/mkspecs/linux-g++ -I/home/i7426159/Desktop/Research/implicitMuscles -I/home/i7426159/Desktop/Research/implicitMuscles/include -I/home/i7426159/Desktop/Research/implicitMuscles/ui -I/home/i7426159/Desktop/Research/implicitMuscles/glm -I/home/i7426159/Desktop/Research/implicitMuscles/shaders -I/opt/Qt5.9.0/5.9/gcc_64/include -I/opt/Qt5.9.0/5.9/gcc_64/include/QtOpenGL -I/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets -I/opt/Qt5.9.0/5.9/gcc_64/include/QtGui -I/opt/Qt5.9.0/5.9/gcc_64/include/QtCore -I/usr/include/c++/4.8.5 -I/usr/include/c++/4.8.5/x86_64-redhat-linux -I/usr/include/c++/4.8.5/backward -I/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include -I/usr/local/include -I/usr/include include/GLWindow.h -o moc_GLWindow.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
