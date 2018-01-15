@@ -4,7 +4,6 @@
 
 #include "Shader.h"
 #include "TrackballCamera.h"
-#include "Mesh.h"
 #include "marchingcube.h"
 
 #include <gtc/matrix_transform.hpp>
@@ -26,6 +25,7 @@ public :
   //----------------------------------------------------------------------------------------------------------------------
   /// @brief Constructor for GLWindow
   /// @param [in] _parent the parent window to create the GL context in
+  /// @author Alberto La Scala
   //----------------------------------------------------------------------------------------------------------------------
   GLWindow( QWidget *_parent );
 
@@ -37,10 +37,9 @@ public :
 public slots:
   void rotating( const bool _rotating ) { m_rotating = _rotating; }
   void init();
-    void generateNewGeometry();
-    void updateOffset(double _offset);
-    void showBones();
-    void showMuscles();
+  void outputMesh();
+  void updateOffset(double _offset);
+
 
 protected:
   /// @brief  The following methods must be implimented in the sub class
@@ -58,9 +57,7 @@ protected:
 
 private :
   //----------------------------------------------------------------------------------------------------------------------
-  Mesh * m_mesh;
-  //----------------------------------------------------------------------------------------------------------------------
-  std::array<Mesh, 5>m_meshes;
+  MarchingCube *m_M;
   //----------------------------------------------------------------------------------------------------------------------
   Shader m_shader;
   //----------------------------------------------------------------------------------------------------------------------
@@ -112,12 +109,10 @@ private :
   //------------------------------------------------------------------------------------------------
   bool m_vboFlag;
   //------------------------------------------------------------------------------------------------
-  bool m_showBones;
-
-  MarchingCube *m_M;
-
-  void createVAO(float _verts, float _norms, float _amountData);
-
+  float m_offsetUI;
+  //------------------------------------------------------------------------------------------------
+  int m_outputMeshNo;
+  //------------------------------------------------------------------------------------------------
 
 
 

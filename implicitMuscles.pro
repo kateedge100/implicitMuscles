@@ -40,11 +40,9 @@ HEADERS += include/MainWindow.h \
            include/Camera.h \
            include/TrackballCamera.h \
            include/Shader.h \
-           include/Mesh.h \
            include/Scene.h \
            include/Buffer.h \
     include/marchingcube.h \
-    include/implicitoctree.h \
     include/signed_distance_field_from_mesh.hpp
 
 
@@ -54,7 +52,6 @@ SOURCES += src/main.cpp \
            src/Camera.cpp \
            src/TrackballCamera.cpp \
            src/Shader.cpp \
-           src/Mesh.cpp \
            src/Scene.cpp \
            src/Buffer.cpp \
            src/marchingcube.cpp

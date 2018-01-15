@@ -32,18 +32,6 @@ void Scene::mouseMove(QMouseEvent * _event)
   m_camera.handleMouseMove( _event->pos().x(), _event->pos().y() );
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-
-void Scene::init()
-{
-
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void Scene::createMesh()
-{
-}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -74,7 +62,7 @@ void Scene::Update()
 
     glUniformMatrix3fv( m_NAddress, 1, GL_FALSE, glm::value_ptr( N ) );
 
-    glDrawArrays( GL_TRIANGLES, m_mesh.getBufferIndex() / 3, ( m_mesh.getAmountVertexData() / 3 ) );
+    //glDrawArrays( GL_TRIANGLES, m_mesh.getBufferIndex() / 3, ( m_mesh.getAmountVertexData() / 3 ) );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -86,7 +74,7 @@ void Scene::Draw() const
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 
-  glDrawArrays( GL_TRIANGLES, m_mesh.getBufferIndex() / 3, ( m_mesh.getAmountVertexData() / 3 ) );
+  //glDrawArrays( GL_TRIANGLES, m_mesh.getBufferIndex() / 3, ( m_mesh.getAmountVertexData() / 3 ) );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

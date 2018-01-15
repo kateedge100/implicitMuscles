@@ -9,6 +9,9 @@ MarchingCube::MarchingCube(int noDynamic, int noStatic)
 
     m_noStatic = noStatic;
 
+    std::cout<<"Number of dynamic "<<m_noDynamic<<"\n";
+
+    std::cout<<"Number of static "<<m_noStatic<<"\n";
 }
 
 
@@ -36,52 +39,12 @@ void MarchingCube::addMesh(int _id, const char* _meshPath, bool _static)
         }
 
     }
-
-
-
-
 }
 
-
-
-
-//float MarchingCube::sdfMesh( glm::vec3 pos)
-//{
-//    // pass m_objVerts std::vector to glm:vec3
-//    glm::vec3 triangleVerts[m_objVerts.size()/3];
-
-//    for(uint i = 0; i < m_objVerts.size()/3; i++)
-//    {
-//        triangleVerts[i].x = m_objVerts[(i*3)];
-//        triangleVerts[i].y = m_objVerts[(i*3)+1];
-//        triangleVerts[i].z = m_objVerts[(i*3)+2];
-//    }
-
-//    // Find closest vertex to pos
-//    float dist = 0;
-
-//    // divided by 9 as triangleVerts a third the size of m_objVerts and then a third less faces then verts
-//    for(uint i = 0; i<m_objVerts.size()/9; i++)
-//    {
-//        float tmpDist = DistancePointTriangle(pos, triangleVerts[i*3],triangleVerts[(i*3)+1], triangleVerts[(i*3)+2]);
-
-//        if(dist == 0 || tmpDist<dist)
-//        {
-//            dist = tmpDist;
-
-//        }
-
-//    }
-
-//    return dist - m_offset;
-//}
-
-
-float MarchingCube::offsetMesh(glm::vec3 pos, int objNo, bool _static)
+float MarchingCube::offsetMesh(glm::vec3 pos, int objNo)
 {
 
     float * src = NULL;
-
     src = new float[m_noDynamic];
 
     float * ub = NULL;
@@ -92,10 +55,6 @@ float MarchingCube::offsetMesh(glm::vec3 pos, int objNo, bool _static)
         src[i] = 0;
         ub[i] = 0;
     }
-
-
-
-
 
     // Current Muscle
     src[0] = m_dynObj[objNo-1](pos.x,pos.y,pos.z);
@@ -117,10 +76,6 @@ float MarchingCube::offsetMesh(glm::vec3 pos, int objNo, bool _static)
 
     }
 
-
-
-
-
     float dyn;
     float oth;
     float sta;
@@ -128,7 +83,7 @@ float MarchingCube::offsetMesh(glm::vec3 pos, int objNo, bool _static)
 
     float r = 0;
 
-    // formula based on number of muscles input
+    // formula based on number of dynamic input
     switch (m_noDynamic) {
     case 1:
 
@@ -217,10 +172,10 @@ float MarchingCube::offsetMesh(glm::vec3 pos, int objNo, bool _static)
         break;
     }
 
-
     delete src;
     delete ub;
 
+    return NULL;
 
 }
 
@@ -228,11 +183,10 @@ float MarchingCube::offsetMesh(glm::vec3 pos, int objNo, bool _static)
 bool MarchingCube::PrepareVolume(int meshNo, bool _static)
 {
 
-
-
-    volume_width = 200;
-    volume_height = 200;
-    volume_depth = 200;
+    // recommended 100 - 200
+    volume_width = 100;
+    volume_height = 100;
+    volume_depth = 100;
 
     m_volume_size = volume_width*volume_height*volume_depth;
 
@@ -272,14 +226,12 @@ bool MarchingCube::PrepareVolume(int meshNo, bool _static)
                 float z = bbox_min[2] + disp[2]*static_cast<float>(k);
 
                 float value;
-                glm::vec3 pos = {x,y,z};
-
-                //value = sdfMesh(pos);
+                glm::vec3 pos = {x,y,z};             
 
 
                 if(_static == false)
                 {
-                    value = offsetMesh(pos, meshNo, _static);
+                    value = offsetMesh(pos, meshNo);
                 }
                 else
                 {
@@ -287,20 +239,6 @@ bool MarchingCube::PrepareVolume(int meshNo, bool _static)
                     value = m_staticObj[meshNo-1](x,y,z);
                 }
 
-
-
-                //std::cout<<"The signed distance to the object is: "<< signeddistance <<std::endl;
-
-
-//                switch (lineFunc) {
-//                case 1: value = line1(x,y,z);
-//                    break;
-//                case 2: value = line2(x,y,z);
-//                default:
-//                    break;
-                //}
-
-                //value =  unionOperation(line1(x,y,z), line2(x,y,z));
                 volumeData[i*volume_width*volume_height + j*volume_width + k] = value;
             }
         }
@@ -310,11 +248,7 @@ bool MarchingCube::PrepareVolume(int meshNo, bool _static)
 
 void MarchingCube::run()
 {
-
-
-    std::cout<<"number of dynamic "<<m_noDynamic<<"\n";
-
-    int noOffsetLevels = 4;
+    int noOffsetLevels = 5;
 
     // for each offset level
     for( int i = 0; i<noOffsetLevels; i++)
@@ -325,14 +259,13 @@ void MarchingCube::run()
         std::cout<<"Polygonizing dynamic "<<"\n";
         for(int j = 1; j<= m_noDynamic; j++)
         {
-
             Polygonize(j, false);
+
         }
         std::cout<<"Polygonizing static "<<"\n";
         for(int k = 1; k<= m_noStatic; k++)
         {
-
-            Polygonize(k, true);
+            Polygonize(k, true);    
         }
 
 
@@ -346,22 +279,17 @@ void MarchingCube::run()
         std::cout<<"Offset saved for offset "<<m_offset<<"\n";
     }
 
-
-
-
-
 }
 
 
 
-std::vector <float> MarchingCube::Polygonize(int modelNo, bool _static)
+void MarchingCube::Polygonize(int modelNo, bool _static)
 {  
 
     std::cout<<"Polygonizing object "<<modelNo<<"\n";
+
     // Prepare the implicit volume ready for marching cubes to be applied
     PrepareVolume(modelNo, _static);
-
-
 
     VertData    d;
     GRIDCELL       grid;
@@ -438,9 +366,7 @@ std::vector <float> MarchingCube::Polygonize(int modelNo, bool _static)
 
     }
 
-
-        m_verts;
-        for(int i =0; i < m_vboMesh.size(); ++i )
+        for(uint i =0; i < m_vboMesh.size(); ++i )
         {
            m_verts.push_back(m_vboMesh[i].x);
            m_verts.push_back(m_vboMesh[i].y);
@@ -449,8 +375,7 @@ std::vector <float> MarchingCube::Polygonize(int modelNo, bool _static)
         }
 
 
-        m_vertsNormal;
-        for(int i =0; i < m_vboMesh.size(); ++i )
+        for(uint i =0; i < m_vboMesh.size(); ++i )
         {
             m_vertsNormal.push_back(m_vboMesh[i].nx);
             m_vertsNormal.push_back(m_vboMesh[i].ny);
@@ -465,13 +390,7 @@ std::vector <float> MarchingCube::Polygonize(int modelNo, bool _static)
 
     allTriangles.erase(allTriangles.begin(), allTriangles.end());
 
-    return m_verts;
-
 }
-
-
-
-
 
 
 // Modified from the code at http://paulbourke.net/geometry/polygonise/
@@ -486,39 +405,7 @@ std::vector <float> MarchingCube::Polygonize(int modelNo, bool _static)
 */
 unsigned int MarchingCube::MarchingTriangles(GRIDCELL g, float iso, std::vector<TRIANGLE> &triList)
 {
-    /*
-       int edgeTable[256].  It corresponds to the 2^8 possible combinations of
-       of the eight (n) vertices either existing inside or outside (2^n) of the
-       surface.  A vertex is inside of a surface if the value at that vertex is
-       less than that of the surface you are scanning for.  The table index is
-       constructed bitwise with bit 0 corresponding to vertex 0, bit 1 to vert
-       1.. bit 7 to vert 7.  The value in the table tells you which edges of
-       the table are intersected by the surface.  Once again bit 0 corresponds
-       to edge 0 and so on, up to edge 12.
-       Constructing the table simply consisted of having a program run thru
-       the 256 cases and setting the edge bit if the vertices at either end of
-       the edge had different values (one is inside while the other is out).
-       The purpose of the table is to speed up the scanning process.  Only the
-       edges whose bit's are set contain vertices of the surface.
-       Vertex 0 is on the bottom face, back edge, left side.
-       The progression of vertices is clockwise around the bottom face
-       and then clockwise around the top face of the cube.  Edge 0 goes from
-       vertex 0 to vertex 1, Edge 1 is from 2->3 and so on around clockwise to
-       vertex 0 again. Then Edge 4 to 7 make up the top face, 4->5, 5->6, 6->7
-       and 7->4.  Edge 8 thru 11 are the vertical edges from vert 0->4, 1->5,
-       2->6, and 3->7.
-           4--------5     *---4----*
-          /|       /|    /|       /|
-         / |      / |   7 |      5 |
-        /  |     /  |  /  8     /  9
-       7--------6   | *----6---*   |
-       |   |    |   | |   |    |   |
-       |   0----|---1 |   *---0|---*
-       |  /     |  /  11 /     10 /
-       | /      | /   | 3      | 1
-       |/       |/    |/       |/
-       3--------2     *---2----*
-    */
+
     static int edgeTable[256]={
     0x0  , 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,
     0x80c, 0x905, 0xa0f, 0xb06, 0xc0a, 0xd03, 0xe09, 0xf00,
@@ -928,21 +815,6 @@ glm::vec3 MarchingCube::VertexInterp(double isolevel,glm::vec3 p1,glm::vec3 p2,d
     return(p);
 }
 
-glm::vec3 MarchingCube::computeTriangleNormal(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3)
-{
-    glm::vec3 norm, vec1, vec2;
-    vec1 = v2-v1;
-    vec2 = v3-v1;
-
-    norm = glm::cross(vec1, vec2);
-    if(norm.length()>0.0)
-        norm = glm::normalize(norm);
-    else
-        printf("");
-    return norm;
-}
-
-//--------------------------------- Xiasongs Code
 glm::vec3 MarchingCube::computeTriangleNormal(TRIANGLE  &itr)
 {
     glm::vec3 norm, vec1, vec2;
@@ -953,46 +825,31 @@ glm::vec3 MarchingCube::computeTriangleNormal(TRIANGLE  &itr)
     if(norm.length()>0.0)
         norm = glm::normalize(norm);
     else
-        printf("");
+        std::cout<<"";
     return norm;
 }
-//-----------------------------------------------------------
-void MarchingCube::createOffsetArray(int _objNo, bool _static)
+
+void MarchingCube::write(std::vector<float> const & _vertices, std::vector<float>const & _normals, std::string _destination)
 {
+    std::ofstream out;
+    out.open(_destination);
+    out.clear();
+    for(unsigned int i = 0; i < _vertices.size(); i+=3)
+    {
+        out << "v " << _vertices[i] << " " << _vertices[i+1] << " " << _vertices[i+2] << "\n";
+    }
+    for(unsigned int i = 0; i < _normals.size(); i+=3)
+    {
+        out << "vn " << _normals[i] << " " << _normals[i+1] << " " << _normals[i+2] << "\n";
+    }
 
-
-
-//    // iterate through each array
-//    for(int j = 0; j < 10; j++)
-//    {
-//        // offset set t 1-10
-//        m_offset = i;
-
-
-//        // dynamic
-//        m->Polygonize(1, false);
-//        m->Polygonize(2, false);
-
-//        // static
-//        m->Polygonize(1, true);
-
-//        m_offsetArray[i].pushback(m_verts);
-
-
-
-//        // add vertices of lines to offsetArray
-////        offsetArray.v[j*i].x= m_verts[j*3];
-////        offsetArray.v[j*i].y= m_verts[(j*3)+1];
-////        offsetArray.v[j*i].z= m_verts[(j*3)+2];
-
-////        // add normals of lines to offsetArray
-////        offsetArray.n[j*i].x= m_vertsNormal[j*3];
-////        offsetArray.n[j*i].y= m_vertsNormal[(j*3)+1];
-////        offsetArray.n[j*i].z= m_vertsNormal[(j*3)+2];
-
-//    }
-
+    for(unsigned int i = 0; i < _vertices.size()/9; ++i)
+    {
+        out << "f " << (i*3)+1 << "//"<< (i*3)+1 << " " << (i*3)+2 << "//" << (i*3)+2 << " " << (i*3)+3 << "//" << (i*3)+3 << "\n";
+    }
 }
+
+
 
 
 

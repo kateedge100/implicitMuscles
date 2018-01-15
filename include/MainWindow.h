@@ -14,6 +14,9 @@
 #include "GLWindow.h"
 #include "marchingcube.h"
 
+///@author Alberto L Scala
+/// Taken from program OpenGl Template
+
 namespace Ui
 {
   class MainWindow;

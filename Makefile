@@ -57,7 +57,6 @@ SOURCES       = src/main.cpp \
 		src/Camera.cpp \
 		src/TrackballCamera.cpp \
 		src/Shader.cpp \
-		src/Mesh.cpp \
 		src/Scene.cpp \
 		src/Buffer.cpp \
 		src/marchingcube.cpp moc_MainWindow.cpp \
@@ -68,7 +67,6 @@ OBJECTS       = obj/main.o \
 		obj/Camera.o \
 		obj/TrackballCamera.o \
 		obj/Shader.o \
-		obj/Mesh.o \
 		obj/Scene.o \
 		obj/Buffer.o \
 		obj/marchingcube.o \
@@ -260,18 +258,15 @@ DIST          = shaders/implicitmuscle.glsl \
 		include/Camera.h \
 		include/TrackballCamera.h \
 		include/Shader.h \
-		include/Mesh.h \
 		include/Scene.h \
 		include/Buffer.h \
 		include/marchingcube.h \
-		include/implicitoctree.h \
 		include/signed_distance_field_from_mesh.hpp src/main.cpp \
 		src/MainWindow.cpp \
 		src/GLWindow.cpp \
 		src/Camera.cpp \
 		src/TrackballCamera.cpp \
 		src/Shader.cpp \
-		src/Mesh.cpp \
 		src/Scene.cpp \
 		src/Buffer.cpp \
 		src/marchingcube.cpp
@@ -672,8 +667,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /opt/Qt5.9.0/5.9/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents include/MainWindow.h include/GLWindow.h include/Camera.h include/TrackballCamera.h include/Shader.h include/Mesh.h include/Scene.h include/Buffer.h include/marchingcube.h include/implicitoctree.h include/signed_distance_field_from_mesh.hpp $(DISTDIR)/
-	$(COPY_FILE) --parents src/main.cpp src/MainWindow.cpp src/GLWindow.cpp src/Camera.cpp src/TrackballCamera.cpp src/Shader.cpp src/Mesh.cpp src/Scene.cpp src/Buffer.cpp src/marchingcube.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents include/MainWindow.h include/GLWindow.h include/Camera.h include/TrackballCamera.h include/Shader.h include/Scene.h include/Buffer.h include/marchingcube.h include/signed_distance_field_from_mesh.hpp $(DISTDIR)/
+	$(COPY_FILE) --parents src/main.cpp src/MainWindow.cpp src/GLWindow.cpp src/Camera.cpp src/TrackballCamera.cpp src/Shader.cpp src/Scene.cpp src/Buffer.cpp src/marchingcube.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ui/mainwindow.ui $(DISTDIR)/
 
 
@@ -920,7 +915,8 @@ moc_MainWindow.cpp: /opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/QMainWindow \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qt_windows.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qopengles2ext.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qopenglext.h \
-		include/Mesh.h \
+		include/marchingcube.h \
+		include/signed_distance_field_from_mesh.hpp \
 		glm/gtc/type_ptr.hpp \
 		glm/gtc/type_ptr.inl \
 		glm/ext.hpp \
@@ -1049,8 +1045,6 @@ moc_MainWindow.cpp: /opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/QMainWindow \
 		glm/detail/intrinsic_matrix.inl \
 		glm/gtx/simd_mat4.inl \
 		include/Buffer.h \
-		include/marchingcube.h \
-		include/signed_distance_field_from_mesh.hpp \
 		include/MainWindow.h \
 		moc_predefs.h \
 		/opt/Qt5.9.0/5.9/gcc_64/bin/moc
@@ -1262,7 +1256,8 @@ moc_GLWindow.cpp: include/Shader.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qt_windows.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qopengles2ext.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qopenglext.h \
-		include/Mesh.h \
+		include/marchingcube.h \
+		include/signed_distance_field_from_mesh.hpp \
 		glm/gtc/type_ptr.hpp \
 		glm/gtc/type_ptr.inl \
 		glm/ext.hpp \
@@ -1634,7 +1629,8 @@ obj/main.o: src/main.cpp /opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/QApplication 
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qt_windows.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qopengles2ext.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qopenglext.h \
-		include/Mesh.h \
+		include/marchingcube.h \
+		include/signed_distance_field_from_mesh.hpp \
 		glm/gtc/type_ptr.hpp \
 		glm/gtc/type_ptr.inl \
 		glm/ext.hpp \
@@ -1762,9 +1758,7 @@ obj/main.o: src/main.cpp /opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/QApplication 
 		glm/detail/intrinsic_matrix.hpp \
 		glm/detail/intrinsic_matrix.inl \
 		glm/gtx/simd_mat4.inl \
-		include/Buffer.h \
-		include/marchingcube.h \
-		include/signed_distance_field_from_mesh.hpp
+		include/Buffer.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/main.o src/main.cpp
 
 obj/MainWindow.o: src/MainWindow.cpp include/MainWindow.h \
@@ -1979,7 +1973,8 @@ obj/MainWindow.o: src/MainWindow.cpp include/MainWindow.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qt_windows.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qopengles2ext.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qopenglext.h \
-		include/Mesh.h \
+		include/marchingcube.h \
+		include/signed_distance_field_from_mesh.hpp \
 		glm/gtc/type_ptr.hpp \
 		glm/gtc/type_ptr.inl \
 		glm/ext.hpp \
@@ -2108,8 +2103,6 @@ obj/MainWindow.o: src/MainWindow.cpp include/MainWindow.h \
 		glm/detail/intrinsic_matrix.inl \
 		glm/gtx/simd_mat4.inl \
 		include/Buffer.h \
-		include/marchingcube.h \
-		include/signed_distance_field_from_mesh.hpp \
 		ui/ui_mainwindow.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/QVariant \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/QAction \
@@ -2158,6 +2151,8 @@ obj/MainWindow.o: src/MainWindow.cpp include/MainWindow.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/QMenuBar \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/qmenubar.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/qmenu.h \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/QPushButton \
+		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/qpushbutton.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/QSpacerItem
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/MainWindow.o src/MainWindow.cpp
 
@@ -2368,7 +2363,8 @@ obj/GLWindow.o: src/GLWindow.cpp include/GLWindow.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qt_windows.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qopengles2ext.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qopenglext.h \
-		include/Mesh.h \
+		include/marchingcube.h \
+		include/signed_distance_field_from_mesh.hpp \
 		glm/gtc/type_ptr.hpp \
 		glm/gtc/type_ptr.inl \
 		glm/ext.hpp \
@@ -2497,8 +2493,6 @@ obj/GLWindow.o: src/GLWindow.cpp include/GLWindow.h \
 		glm/detail/intrinsic_matrix.inl \
 		glm/gtx/simd_mat4.inl \
 		include/Buffer.h \
-		include/marchingcube.h \
-		include/signed_distance_field_from_mesh.hpp \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/QColorDialog \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/qcolordialog.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtWidgets/qdialog.h \
@@ -2829,88 +2823,6 @@ obj/TrackballCamera.o: src/TrackballCamera.cpp include/TrackballCamera.h \
 
 obj/Shader.o: src/Shader.cpp include/Shader.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/Shader.o src/Shader.cpp
-
-obj/Mesh.o: src/Mesh.cpp include/Mesh.h \
-		glm/glm.hpp \
-		glm/detail/_fixes.hpp \
-		glm/fwd.hpp \
-		glm/detail/type_int.hpp \
-		glm/detail/setup.hpp \
-		glm/detail/type_float.hpp \
-		glm/detail/type_vec.hpp \
-		glm/detail/precision.hpp \
-		glm/detail/type_mat.hpp \
-		glm/vec2.hpp \
-		glm/detail/type_vec2.hpp \
-		glm/detail/_swizzle.hpp \
-		glm/detail/_swizzle_func.hpp \
-		glm/detail/type_vec2.inl \
-		glm/vec3.hpp \
-		glm/detail/type_vec3.hpp \
-		glm/detail/type_vec3.inl \
-		glm/vec4.hpp \
-		glm/detail/type_vec4.hpp \
-		glm/detail/type_vec4.inl \
-		glm/detail/type_vec4_sse2.inl \
-		glm/detail/type_vec4_avx.inl \
-		glm/detail/type_vec4_avx2.inl \
-		glm/mat2x2.hpp \
-		glm/detail/type_mat2x2.hpp \
-		glm/detail/type_mat2x2.inl \
-		glm/mat2x3.hpp \
-		glm/detail/type_mat2x3.hpp \
-		glm/detail/type_mat2x3.inl \
-		glm/mat2x4.hpp \
-		glm/detail/type_mat2x4.hpp \
-		glm/detail/type_mat2x4.inl \
-		glm/mat3x2.hpp \
-		glm/detail/type_mat3x2.hpp \
-		glm/detail/type_mat3x2.inl \
-		glm/mat3x3.hpp \
-		glm/detail/type_mat3x3.hpp \
-		glm/detail/type_mat3x3.inl \
-		glm/mat3x4.hpp \
-		glm/detail/type_mat3x4.hpp \
-		glm/detail/type_mat3x4.inl \
-		glm/mat4x2.hpp \
-		glm/detail/type_mat4x2.hpp \
-		glm/detail/type_mat4x2.inl \
-		glm/mat4x3.hpp \
-		glm/detail/type_mat4x3.hpp \
-		glm/detail/type_mat4x3.inl \
-		glm/mat4x4.hpp \
-		glm/detail/type_mat4x4.hpp \
-		glm/detail/type_mat4x4.inl \
-		glm/trigonometric.hpp \
-		glm/detail/func_trigonometric.hpp \
-		glm/detail/func_trigonometric.inl \
-		glm/detail/_vectorize.hpp \
-		glm/detail/type_vec1.hpp \
-		glm/detail/type_vec1.inl \
-		glm/exponential.hpp \
-		glm/detail/func_exponential.hpp \
-		glm/detail/func_exponential.inl \
-		glm/detail/func_vector_relational.hpp \
-		glm/detail/func_vector_relational.inl \
-		glm/common.hpp \
-		glm/detail/func_common.hpp \
-		glm/detail/func_common.inl \
-		glm/packing.hpp \
-		glm/detail/func_packing.hpp \
-		glm/detail/func_packing.inl \
-		glm/detail/type_half.hpp \
-		glm/detail/type_half.inl \
-		glm/geometric.hpp \
-		glm/detail/func_geometric.hpp \
-		glm/detail/func_geometric.inl \
-		glm/matrix.hpp \
-		glm/detail/func_matrix.hpp \
-		glm/detail/func_matrix.inl \
-		glm/vector_relational.hpp \
-		glm/integer.hpp \
-		glm/detail/func_integer.hpp \
-		glm/detail/func_integer.inl
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/Mesh.o src/Mesh.cpp
 
 obj/Scene.o: src/Scene.cpp include/Scene.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/QResizeEvent \
@@ -3246,7 +3158,6 @@ obj/Scene.o: src/Scene.cpp include/Scene.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/qt_windows.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qopengles2ext.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qopenglext.h \
-		include/Mesh.h \
 		include/Buffer.h \
 		include/marchingcube.h \
 		include/signed_distance_field_from_mesh.hpp
@@ -3445,8 +3356,7 @@ obj/marchingcube.o: src/marchingcube.cpp include/marchingcube.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/qopenglext.h \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtGui/QResizeEvent \
 		/opt/Qt5.9.0/5.9/gcc_64/include/QtCore/QEvent \
-		include/signed_distance_field_from_mesh.hpp \
-		include/Mesh.h
+		include/signed_distance_field_from_mesh.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/marchingcube.o src/marchingcube.cpp
 
 obj/moc_MainWindow.o: moc_MainWindow.cpp 

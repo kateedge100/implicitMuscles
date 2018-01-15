@@ -10,6 +10,8 @@
 #include <iostream>
 #include <vector>
 
+///@author Alberto L Scala
+/// Taken from program OpenGl Template
 class Buffer
 {
 public:

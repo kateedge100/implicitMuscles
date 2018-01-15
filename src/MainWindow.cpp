@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_ui -> s_mainWindowGridLayout -> addWidget(m_gl,0,0,3,5);
     connect( m_ui->m_rotating, SIGNAL(clicked(bool)), m_gl, SLOT(rotating(bool)));
     connect(m_ui->offsetSpinBox, SIGNAL(valueChanged(double)),m_gl, SLOT(updateOffset(double)));
-
+    connect( m_ui->outputButton, SIGNAL(clicked(bool)), m_gl, SLOT(outputMesh()));
 
 }
 

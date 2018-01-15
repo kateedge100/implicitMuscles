@@ -10,6 +10,9 @@
 #include <string>
 #include <fstream>
 
+///@author Alberto L Scala
+/// Taken from program OpenGl Template
+
 class Shader
 {
 private:
