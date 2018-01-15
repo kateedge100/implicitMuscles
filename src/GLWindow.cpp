@@ -40,7 +40,7 @@ void GLWindow::initializeGL()
   glClearColor( 0.5f, 0.5f, 0.5f, 1.0f );
   glViewport( 0, 0, devicePixelRatio(), devicePixelRatio() );
 
-  m_meshes[0] = Mesh( "models/cube.obj", "bone" );
+  m_meshes[0] = Mesh( "models/cube1.obj", "bone" );
   m_meshes[1] = Mesh( "models/muscle.obj", "muscle" );
   m_meshes[2] = Mesh( "models/bone.obj", "Suzanne" );
   m_meshes[3] = Mesh( "models/test2.obj", "weirdShape" );
@@ -100,10 +100,6 @@ void GLWindow::init()
   glUseProgram( m_shader.getShaderProgram() );
 
 
-
-
-  //-------------------------------------------------- Marching Cubes Stuff
-
   // if we have already created a VBO just return.
   if(m_vaoFlag == true)
   {
@@ -117,41 +113,19 @@ void GLWindow::init()
   glGenBuffers( 1, &m_vbo );
   glGenBuffers( 1, &m_nbo );
 
-
-  //createVAO(medialAxis->getVertexData(), medialAxis->getNormalsData(), medialAxis->getAmountVertexData() );
-
-  //showBones();
-
-
-  //showMuscles();
-
-
-
-  // Implicit demo
-  //----------------------------------------------------------------------------------------------------
-  //MarchingCube *m = new MarchingCube(2,1);
-
-  //m->m_obj[0].load_from_file("models/cube1.obj");
-  //m->m_obj[1].load_from_file("models/cube2.obj");
-  //m->m_obj[2].load_from_file("models/cube3.obj");
+  // Add obj files
 
   // dynamic
-  m_M->addMesh(1,"models/cube2.obj", false);
-  m_M->addMesh(2,"models/cube3.obj", false);
+  m_M->addMesh(1,"models/muscle1.obj", false);
+  m_M->addMesh(2,"models/muscle2.obj", false);
+  //m_M->addMesh(3,"models/cube4.obj", false);
 
   // static
-  m_M->addMesh(1,"models/cube1.obj", true);
+  m_M->addMesh(1,"models/bone.obj", true);
 
-//  // dynamic
-//  m->Polygonize(1, false);
-//  m->Polygonize(2, false);
-
-//  // static
-//  m->Polygonize(1, true);
 
   m_M->run();
 
-  //m_amountVertexData = m_M->m_verts.size();
   m_amountVertexData = m_M->m_offsetArray[0].size();
 
   // load vertices
@@ -171,35 +145,6 @@ void GLWindow::init()
   glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
   //glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m_M->m_vertsNormal[0] );
   glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m_M->m_normalOffsetArray[0][0]);
-
-  //----------------------------------------------------------------------------------------------------
- // MEDIAL AXIS LOAD
-
-//  Mesh *medialAxis = new Mesh();
-
-//  medialAxis->readPLY2Mesh("models/output.ply2");
-
-//  medialAxis->write(medialAxis->getVertices(), medialAxis->getNormals(), "objOutput.obj");
-
-//  m_amountVertexData = medialAxis->getAmountVertexData();
-
-//  // load vertices
-//  glBindBuffer( GL_ARRAY_BUFFER, m_vbo );
-//  glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
-//  glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &medialAxis->getVertexData());
-
-//  // pass vertices to shader
-//  GLint pos = glGetAttribLocation( m_shader.getShaderProgram(), "VertexPosition" );
-//  glEnableVertexAttribArray( pos );
-//  glVertexAttribPointer( pos, 3, GL_FLOAT, GL_FALSE, 0, 0 );
-
-
-//  // load normals
-//  glBindBuffer( GL_ARRAY_BUFFER,	m_nbo );
-//  glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
-//  glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &medialAxis->getNormalsData() );
-
-  //----------------------------------------------------------------------------------------------------
 
   // pass normals to shader
   GLint n = glGetAttribLocation( m_shader.getShaderProgram(), "VertexNormal" );

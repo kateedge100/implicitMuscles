@@ -140,8 +140,8 @@ float MarchingCube::offsetMesh(glm::vec3 pos, int objNo, bool _static)
         else
         {
             sta = m_staticObj[0](pos.x,pos.y,pos.z);
-            //std::cout<<"Dynamic single";
-            bound = glm::max(src[0],-sta);
+            dyn = (ub[0]-sta);
+            bound = glm::max(glm::min(dyn,src[0]),-sta);
 
             if(bound <0.0)
             {
@@ -198,8 +198,7 @@ float MarchingCube::offsetMesh(glm::vec3 pos, int objNo, bool _static)
         }
 
         else
-        {
-            std::cout<<"Static Object Bound";
+        {            
             bound = glm::max(glm::min(dyn, src[0]), -glm::min(oth,sta));
         }
 
@@ -231,9 +230,9 @@ bool MarchingCube::PrepareVolume(int meshNo, bool _static)
 
 
 
-    volume_width = 100;
-    volume_height = 100;
-    volume_depth = 100;
+    volume_width = 200;
+    volume_height = 200;
+    volume_depth = 200;
 
     m_volume_size = volume_width*volume_height*volume_depth;
 
@@ -315,12 +314,14 @@ void MarchingCube::run()
 
     std::cout<<"number of dynamic "<<m_noDynamic<<"\n";
 
-    int noOffsetLevels = 2;
+    int noOffsetLevels = 4;
 
     // for each offset level
     for( int i = 0; i<noOffsetLevels; i++)
     {
-        m_offset = i;
+        m_offset = float(i)/5;
+
+
         std::cout<<"Polygonizing dynamic "<<"\n";
         for(int j = 1; j<= m_noDynamic; j++)
         {
@@ -342,7 +343,7 @@ void MarchingCube::run()
         m_verts.clear();
         m_vertsNormal.clear();
 
-        std::cout<<"Offset saved for offset"<<m_offset<<"\n";
+        std::cout<<"Offset saved for offset "<<m_offset<<"\n";
     }
 
 
