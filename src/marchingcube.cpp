@@ -95,13 +95,14 @@ float MarchingCube::offsetMesh(glm::vec3 pos, int objNo, bool _static)
 
 
 
-    //Alocate Muscle to variables, src[0] , must be current muscle
+
 
     // Current Muscle
     src[0] = m_dynObj[objNo-1](pos.x,pos.y,pos.z);
 
     ub[0] = src[0]-m_offset;
 
+    //Alocate Muscle to variables, src[0] , must be current muscle
     int j = 1;
     for(int i = 0; i < m_noDynamic; i++)
     {
@@ -230,9 +231,9 @@ bool MarchingCube::PrepareVolume(int meshNo, bool _static)
 
 
 
-    volume_width = 200;
-    volume_height = 200;
-    volume_depth = 200;
+    volume_width = 100;
+    volume_height = 100;
+    volume_depth = 100;
 
     m_volume_size = volume_width*volume_height*volume_depth;
 
@@ -308,18 +309,55 @@ bool MarchingCube::PrepareVolume(int meshNo, bool _static)
      return true;
 }
 
+void MarchingCube::run()
+{
+
+
+    std::cout<<"number of dynamic "<<m_noDynamic<<"\n";
+
+    int noOffsetLevels = 2;
+
+    // for each offset level
+    for( int i = 0; i<noOffsetLevels; i++)
+    {
+        m_offset = i;
+        std::cout<<"Polygonizing dynamic "<<"\n";
+        for(int j = 1; j<= m_noDynamic; j++)
+        {
+
+            Polygonize(j, false);
+        }
+        std::cout<<"Polygonizing static "<<"\n";
+        for(int k = 1; k<= m_noStatic; k++)
+        {
+
+            Polygonize(k, true);
+        }
+
+
+        m_offsetArray[i] = m_verts;
+        m_normalOffsetArray[i] = m_vertsNormal;
+
+        // clear m_verts after storing ready for next offset
+        m_verts.clear();
+        m_vertsNormal.clear();
+
+        std::cout<<"Offset saved for offset"<<m_offset<<"\n";
+    }
+
+
+
+
+
+}
+
 
 
 std::vector <float> MarchingCube::Polygonize(int modelNo, bool _static)
-{
+{  
 
-    //LoadVolumeFromFile(std::string("mri.raw"));
-
+    std::cout<<"Polygonizing object "<<modelNo<<"\n";
     // Prepare the implicit volume ready for marching cubes to be applied
-
-
-
-
     PrepareVolume(modelNo, _static);
 
 
@@ -420,17 +458,13 @@ std::vector <float> MarchingCube::Polygonize(int modelNo, bool _static)
 
         }
 
-     Mesh::write(m_verts,m_vertsNormal, "outputDynamic.obj");
-     std::cout<<"Object Created!";
-
-
+        // clear vbo ready for next object
+        m_vboMesh.clear();
 
 
     allTriangles.erase(allTriangles.begin(), allTriangles.end());
 
     return m_verts;
-
-
 
 }
 
@@ -922,39 +956,43 @@ glm::vec3 MarchingCube::computeTriangleNormal(TRIANGLE  &itr)
     return norm;
 }
 //-----------------------------------------------------------
-void MarchingCube::createOffsetArray()
+void MarchingCube::createOffsetArray(int _objNo, bool _static)
 {
-    OFFSET offsetArray;
-
-    // iterate through arrays of pointa
-    for(int i = 0; i < 10; i++)
-    {
-        // iterate through each array
-        for(int j = 0; j < m_nVerts; j++)
-        {
-            // offset set t 1-10
-            m_offset = i+1;
-
-            // polygonize lines
-            Polygonize(0, false);
 
 
-            // add vertices of lines to offsetArray
-            offsetArray.v[j*i].x= m_verts[j*3];
-            offsetArray.v[j*i].y= m_verts[(j*3)+1];
-            offsetArray.v[j*i].z= m_verts[(j*3)+2];
 
-            // add normals of lines to offsetArray
-            offsetArray.n[j*i].x= m_vertsNormal[j*3];
-            offsetArray.n[j*i].y= m_vertsNormal[(j*3)+1];
-            offsetArray.n[j*i].z= m_vertsNormal[(j*3)+2];
+//    // iterate through each array
+//    for(int j = 0; j < 10; j++)
+//    {
+//        // offset set t 1-10
+//        m_offset = i;
 
-        }
 
-    }
+//        // dynamic
+//        m->Polygonize(1, false);
+//        m->Polygonize(2, false);
 
+//        // static
+//        m->Polygonize(1, true);
+
+//        m_offsetArray[i].pushback(m_verts);
+
+
+
+//        // add vertices of lines to offsetArray
+////        offsetArray.v[j*i].x= m_verts[j*3];
+////        offsetArray.v[j*i].y= m_verts[(j*3)+1];
+////        offsetArray.v[j*i].z= m_verts[(j*3)+2];
+
+////        // add normals of lines to offsetArray
+////        offsetArray.n[j*i].x= m_vertsNormal[j*3];
+////        offsetArray.n[j*i].y= m_vertsNormal[(j*3)+1];
+////        offsetArray.n[j*i].z= m_vertsNormal[(j*3)+2];
+
+//    }
 
 }
+
 
 
 

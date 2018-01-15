@@ -5,6 +5,7 @@
 #include "Shader.h"
 #include "TrackballCamera.h"
 #include "Mesh.h"
+#include "marchingcube.h"
 
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
@@ -53,6 +54,7 @@ protected:
   /// @brief this is the main gl drawing routine which is called whenever the window needs to be re-drawn
   void paintGL();
   void renderScene();
+
 
 private :
   //----------------------------------------------------------------------------------------------------------------------
@@ -111,6 +113,8 @@ private :
   bool m_vboFlag;
   //------------------------------------------------------------------------------------------------
   bool m_showBones;
+
+  MarchingCube *m_M;
 
   void createVAO(float _verts, float _norms, float _amountData);
 

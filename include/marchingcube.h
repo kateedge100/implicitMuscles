@@ -42,8 +42,8 @@ typedef struct {
 } GRIDCELL;
 
 typedef struct {
-    glm::vec3 v[10];//v[10*m_nVerts];
-    glm::vec3 n[10];//n[10*m_nVerts];
+    std::vector<float> v[10];//v[10*m_nVerts];
+    std::vector<float> n[10];//n[10*m_nVerts];
 
 
 }OFFSET;
@@ -117,8 +117,9 @@ public:
     float m_offset;
     //----------------------------------------------------------------------------------------------------------------------
     std::vector<float> m_offsetArray [10];
+    std::vector<float> m_normalOffsetArray [10];
     //----------------------------------------------------------------------------------------------------------------------
-    void createOffsetArray();
+    void createOffsetArray(int _objNo, bool _static);
     //----------------------------------------------------------------------------------------------------------------------
     float sdfMesh(glm::vec3 pos);
     //----------------------------------------------------------------------------------------------------------------------
@@ -138,6 +139,8 @@ public:
     float staticObj(glm::vec3 pos);
 
     void addMesh(int _id, const char *_meshPath, bool _static);
+
+    void run();
 
 
 
