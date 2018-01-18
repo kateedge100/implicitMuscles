@@ -3,6 +3,8 @@ Implicit Bodybuild: Research Project
 
 In order to compile the folder glm must be contained in the project directory.
 
+There have been some reported problems running on Macs but should compile fine on Windows.
+
 OpenGLTemplate created by ALberto La Scala used for window setup and openGL scene.
 
 Original file found here: https://github.com/albelax/OpenGLTemplate
