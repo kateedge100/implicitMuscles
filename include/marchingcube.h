@@ -112,10 +112,10 @@ public:
     float m_offset;
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief An array of the vertices of the meshes at each offset level, used for quickly updating offset
-    std::vector<float> m_offsetArray [10];
+    std::vector<float> m_offsetArray [10][4];
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief An array of the vertices normals of the meshes at each offset level, used for quickly updating offset
-    std::vector<float> m_normalOffsetArray [10];
+    std::vector<float> m_normalOffsetArray [10][4];
     //----------------------------------------------------------------------------------------------------------------------
     typedef sdf::signed_distance_field_from_mesh mesh;
     //----------------------------------------------------------------------------------------------------------------------

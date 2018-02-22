@@ -248,7 +248,7 @@ bool MarchingCube::PrepareVolume(int meshNo, bool _static)
 
 void MarchingCube::run()
 {
-    int noOffsetLevels = 5;
+    int noOffsetLevels = 2;
 
     // for each offset level
     for( int i = 0; i<noOffsetLevels; i++)
@@ -261,20 +261,29 @@ void MarchingCube::run()
         {
             Polygonize(j, false);
 
+            m_offsetArray[i][j-1] = m_verts;
+            m_normalOffsetArray[i][j-1] = m_vertsNormal;
+
+            // clear m_verts after storing ready for next offset
+            m_verts.clear();
+            m_vertsNormal.clear();
+
         }
         std::cout<<"Polygonizing static "<<"\n";
         for(int k = 1; k<= m_noStatic; k++)
         {
-            Polygonize(k, true);    
+            Polygonize(k, true);
+
+            m_offsetArray[i][m_noDynamic + (k-1)] = m_verts;
+            m_normalOffsetArray[i][m_noDynamic + (k-1)] = m_vertsNormal;
+
+            // clear m_verts after storing ready for next offset
+            m_verts.clear();
+            m_vertsNormal.clear();
         }
 
 
-        m_offsetArray[i] = m_verts;
-        m_normalOffsetArray[i] = m_vertsNormal;
 
-        // clear m_verts after storing ready for next offset
-        m_verts.clear();
-        m_vertsNormal.clear();
 
         std::cout<<"Offset saved for offset "<<m_offset<<"\n";
     }

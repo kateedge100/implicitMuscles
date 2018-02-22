@@ -117,12 +117,13 @@ void GLWindow::init()
   // polygonizes the input mesh
   m_M->run();
 
-  m_amountVertexData = m_M->m_offsetArray[0].size();
+  m_amountVertexData = m_M->m_offsetArray[0][0].size();
 
   // load vertices
   glBindBuffer( GL_ARRAY_BUFFER, m_vbo );
   glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
-  glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m_M->m_offsetArray[0][0]);
+  glBufferSubData( GL_ARRAY_BUFFER, 0, m_M->m_offsetArray[0][0].size() * sizeof(float), &m_M->m_offsetArray[0][0][0]);
+
 
   // pass vertices to shader
   GLint pos = glGetAttribLocation( m_shader.getShaderProgram(), "VertexPosition" );
@@ -133,7 +134,9 @@ void GLWindow::init()
   // load normals
   glBindBuffer( GL_ARRAY_BUFFER,	m_nbo );
   glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
-  glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m_M->m_normalOffsetArray[0][0]);
+  glBufferSubData( GL_ARRAY_BUFFER, 0, m_M->m_offsetArray[0][0].size() * sizeof(float), &m_M->m_normalOffsetArray[0][0][0]);
+
+
 
   // pass normals to shader
   GLint n = glGetAttribLocation( m_shader.getShaderProgram(), "VertexNormal" );
@@ -194,14 +197,14 @@ void GLWindow::updateOffset(double _offset)
 {
     m_offsetUI = _offset;
 
-    m_amountVertexData = m_M->m_offsetArray[int(_offset*5)].size();
+    m_amountVertexData = m_M->m_offsetArray[int(_offset*5)][0].size();
 
     std::cout<<"Offset Updated!\nNew offset is "<<_offset<<"\n";
 
     // load vertices
     glBindBuffer( GL_ARRAY_BUFFER, m_vbo );
     glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
-    glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m_M->m_offsetArray[int(_offset*5)][0]);
+    glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m_M->m_offsetArray[int(_offset*5)][0][0]);
 
     // pass vertices to shader
     GLint pos = glGetAttribLocation( m_shader.getShaderProgram(), "VertexPosition" );
@@ -211,7 +214,7 @@ void GLWindow::updateOffset(double _offset)
     // load normals
     glBindBuffer( GL_ARRAY_BUFFER,	m_nbo );
     glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
-    glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m_M->m_normalOffsetArray[int(_offset*5)][0] );
+    glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m_M->m_normalOffsetArray[int(_offset*5)][0][0]);
 
     // pass normals to shader
     GLint n = glGetAttribLocation( m_shader.getShaderProgram(), "VertexNormal" );
@@ -226,7 +229,21 @@ void GLWindow::outputMesh()
     std::string outputFormat = ".obj";
     std::string meshNo = std::to_string(m_outputMeshNo);
 
-    m_M->write(m_M->m_offsetArray[int(m_offsetUI*5)],m_M->m_normalOffsetArray[int(m_offsetUI*5)], outputName+meshNo+outputFormat);
+    for(int i = 0; i< m_M->m_noDynamic + m_M->m_noStatic; i++)
+    {
+        if(i<m_M->m_noDynamic)
+        {
+            outputName = "muscleMesh";
+
+        }
+        else
+        {
+            outputName = "boneMesh";
+        }
+        m_M->write(m_M->m_offsetArray[int(m_offsetUI*5)][i],m_M->m_normalOffsetArray[int(m_offsetUI*5)][i], outputName+"_"+std::to_string(i)+"_"+meshNo+outputFormat);
+
+    }
+
 
     m_outputMeshNo ++;
 
