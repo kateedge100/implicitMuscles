@@ -44,14 +44,14 @@ void GLWindow::initializeGL()
   glClearColor( 0.5f, 0.5f, 0.5f, 1.0f );
   glViewport( 0, 0, devicePixelRatio(), devicePixelRatio() );
 
-  m_M = new MarchingCube(2,1);
+  m_M = new MarchingCube(2,0);
 
   // dynamic
-  m_M->addMesh(1,"models/muscle1.obj", false);
-  m_M->addMesh(2,"models/muscle2.obj", false);
+  m_M->addMesh(1,"models/cube1.obj", false);
+  m_M->addMesh(2,"models/cube2.obj", false);
 
   // static
-  m_M->addMesh(1,"models/bone.obj", true);
+  //m_M->addMesh(1,"models/bone.obj", true);
 
 
   init();
@@ -96,10 +96,14 @@ void GLWindow::mouseClick(QMouseEvent * _event)
 void GLWindow::init()
 {
   std::string shadersAddress = "shaders/";
-  m_shader = Shader( "m_shader", shadersAddress + "phong_vert.glsl", shadersAddress + "simplefrag.glsl" );
+  //m_shader = Shader( "m_shader", shadersAddress + "phong_vert.glsl", shadersAddress + "simplefrag.glsl" );
+  Shader boneShader = Shader( "bone_shader", shadersAddress + "phong_vert.glsl", shadersAddress + "muscle_frag.glsl" );
 
-  glLinkProgram( m_shader.getShaderProgram() );
-  glUseProgram( m_shader.getShaderProgram() );
+  //glLinkProgram( m_shader.getShaderProgram() );
+  //glUseProgram( m_shader.getShaderProgram() );
+
+  glLinkProgram( boneShader.getShaderProgram() );
+  glUseProgram( boneShader.getShaderProgram() );
 
 
   // if we have already created a VBO just return.
@@ -126,7 +130,7 @@ void GLWindow::init()
 
 
   // pass vertices to shader
-  GLint pos = glGetAttribLocation( m_shader.getShaderProgram(), "VertexPosition" );
+  GLint pos = glGetAttribLocation(boneShader.getShaderProgram(), "VertexPosition" );
   glEnableVertexAttribArray( pos );
   glVertexAttribPointer( pos, 3, GL_FLOAT, GL_FALSE, 0, 0 );
 
@@ -139,17 +143,88 @@ void GLWindow::init()
 
 
   // pass normals to shader
-  GLint n = glGetAttribLocation( m_shader.getShaderProgram(), "VertexNormal" );
+  GLint n = glGetAttribLocation( boneShader.getShaderProgram(), "VertexNormal" );
   glEnableVertexAttribArray( n );
   glVertexAttribPointer( n, 3, GL_FLOAT, GL_FALSE, 0, 0 );
 
   m_vaoFlag = true;
 
   // link matrices with shader locations
-  m_MVAddress = glGetUniformLocation( m_shader.getShaderProgram(), "MV" );
-  m_MVPAddress = glGetUniformLocation( m_shader.getShaderProgram(), "MVP" );
-  m_NAddress = glGetUniformLocation( m_shader.getShaderProgram(), "N" );
-  m_timeAddress = glGetUniformLocation( m_shader.getShaderProgram(), "Time" );
+  m_MVAddress = glGetUniformLocation( boneShader.getShaderProgram(), "MV" );
+  m_MVPAddress = glGetUniformLocation( boneShader.getShaderProgram(), "MVP" );
+  m_NAddress = glGetUniformLocation( boneShader.getShaderProgram(), "N" );
+  m_timeAddress = glGetUniformLocation( boneShader.getShaderProgram(), "Time" );
+
+
+
+
+
+
+  //------------------------------------------------------------------------------------
+
+
+//  m_shader = Shader( "m_shader", shadersAddress + "phong_vert.glsl", shadersAddress + "simplefrag.glsl" );
+//  //Shader boneShader = Shader( "bone_shader", shadersAddress + "phong_vert.glsl", shadersAddress + "muscle_frag.glsl" );
+
+//  glLinkProgram( m_shader.getShaderProgram() );
+//  glUseProgram( m_shader.getShaderProgram() );
+
+////  glLinkProgram( boneShader.getShaderProgram() );
+////  glUseProgram( boneShader.getShaderProgram() );
+
+
+////  // if we have already created a VBO just return.
+////  if(m_vaoFlag == true)
+////  {
+////      std::cout<<"VAO exist so returning\n";
+////      return;
+////  }
+
+////  glGenVertexArrays( 1, &m_vao );
+////  glBindVertexArray( m_vao );
+////  glGenBuffers( 1, &m_vbo );
+////  glGenBuffers( 1, &m_nbo );
+
+
+//  m_amountVertexData = m_M->m_offsetArray[0][1].size();
+
+//  // load vertices
+//  glBindBuffer( GL_ARRAY_BUFFER, m_vbo );
+//  glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
+//  glBufferSubData( GL_ARRAY_BUFFER, 0, m_M->m_offsetArray[0][1].size() * sizeof(float), &m_M->m_offsetArray[0][1][0]);
+
+
+//  // pass vertices to shader
+//  GLint pos2 = glGetAttribLocation(m_shader.getShaderProgram(), "VertexPosition" );
+//  glEnableVertexAttribArray( pos2 );
+//  glVertexAttribPointer( pos2, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+
+
+//  // load normals
+//  glBindBuffer( GL_ARRAY_BUFFER,	m_nbo );
+//  glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
+//  glBufferSubData( GL_ARRAY_BUFFER, 0, m_M->m_offsetArray[0][1].size() * sizeof(float), &m_M->m_normalOffsetArray[0][1][0]);
+
+
+
+//  // pass normals to shader
+//  GLint n2 = glGetAttribLocation( m_shader.getShaderProgram(), "VertexNormal" );
+//  glEnableVertexAttribArray( n2);
+//  glVertexAttribPointer( n2, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+
+//  m_vaoFlag = true;
+
+//  // link matrices with shader locations
+//  m_MVAddress = glGetUniformLocation( m_shader.getShaderProgram(), "MV" );
+//  m_MVPAddress = glGetUniformLocation( m_shader.getShaderProgram(), "MVP" );
+//  m_NAddress = glGetUniformLocation( m_shader.getShaderProgram(), "N" );
+//  m_timeAddress = glGetUniformLocation( m_shader.getShaderProgram(), "Time" );
+
+
+
+
+
+
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

@@ -225,11 +225,6 @@ void main()
             Light.Ld * Material.Kd * max( dot(s, n), 0.0 ) +
             Light.Ls * Material.Ks * pow( max( dot(r,v), 0.0 ), Material.Shininess));
 
-<<<<<<< HEAD
-=======
 
-    // Set the output color of our current pixel
-   //FragColor = vec4(color,1.0);
->>>>>>> 649415426ce0de3d3b7bdbca36a7c2b55118b661
         FragColor = vec4(LightIntensity * vec3(1,0,0),1.0);
 }
