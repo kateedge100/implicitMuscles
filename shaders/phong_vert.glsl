@@ -9,7 +9,7 @@
 uniform mat4 MV;
 uniform mat4 MVP;
 uniform mat3 N; // This is the inverse transpose of the MV matrix
-
+uniform vec3 Color;
 // The vertex position attribute
 layout (location = 0) in vec3 VertexPosition;
 
@@ -22,10 +22,13 @@ layout (location = 2) in vec3 VertexNormal;
 // The time in the scene
 layout (location = 3) in float Time;
 
+//layout ( location = 4 ) in vec3 Color;
+
 out vec3 FragmentPosition;
 out vec3 FragmentNormal;
 out vec2 texCoord;
 out float time;
+out vec3 color;
 
 /************************************************************************************/
 void main()
@@ -36,5 +39,6 @@ void main()
                 FragmentNormal = N * VertexNormal;
 		texCoord = TexCoord;
                 time = Time;
+                color = Color;
 }
 
