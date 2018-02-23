@@ -48,7 +48,7 @@ void GLWindow::initializeGL()
 
   // dynamic
   m_M->addMesh(1,"models/cube1.obj", false);
-  m_M->addMesh(2,"models/cube2.obj", false);
+  m_M->addMesh(2,"models/bone.obj", false);
 
   // static
   //m_M->addMesh(1,"models/bone.obj", true);
@@ -96,11 +96,10 @@ void GLWindow::mouseClick(QMouseEvent * _event)
 void GLWindow::init()
 {
   std::string shadersAddress = "shaders/";
-  //m_shader = Shader( "m_shader", shadersAddress + "phong_vert.glsl", shadersAddress + "simplefrag.glsl" );
+  m_shader = Shader( "m_shader", shadersAddress + "phong_vert.glsl", shadersAddress + "simplefrag.glsl" );
   Shader boneShader = Shader( "bone_shader", shadersAddress + "phong_vert.glsl", shadersAddress + "muscle_frag.glsl" );
 
-  //glLinkProgram( m_shader.getShaderProgram() );
-  //glUseProgram( m_shader.getShaderProgram() );
+
 
   glLinkProgram( boneShader.getShaderProgram() );
   glUseProgram( boneShader.getShaderProgram() );
@@ -113,19 +112,29 @@ void GLWindow::init()
       return;
   }
 
+  GLuint m_vbo2;
+  GLuint m_nbo2;
+
   glGenVertexArrays( 1, &m_vao );
   glBindVertexArray( m_vao );
+
+  // buffer for bone shader
   glGenBuffers( 1, &m_vbo );
   glGenBuffers( 1, &m_nbo );
+
+  // buffer for muscle shader
+  glGenBuffers( 1, &m_vbo2 );
+  glGenBuffers( 1, &m_nbo2 );
 
   // polygonizes the input mesh
   m_M->run();
 
-  m_amountVertexData = m_M->m_offsetArray[0][0].size();
+  m_amountVertexData = m_M->m_offsetArray[0][1].size() + m_M->m_offsetArray[0][0].size();
 
   // load vertices
   glBindBuffer( GL_ARRAY_BUFFER, m_vbo );
   glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
+  glBufferSubData( GL_ARRAY_BUFFER, 0, m_M->m_offsetArray[0][1].size() * sizeof(float), &m_M->m_offsetArray[0][1][0]);
   glBufferSubData( GL_ARRAY_BUFFER, 0, m_M->m_offsetArray[0][0].size() * sizeof(float), &m_M->m_offsetArray[0][0][0]);
 
 
@@ -138,8 +147,8 @@ void GLWindow::init()
   // load normals
   glBindBuffer( GL_ARRAY_BUFFER,	m_nbo );
   glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
-  glBufferSubData( GL_ARRAY_BUFFER, 0, m_M->m_offsetArray[0][0].size() * sizeof(float), &m_M->m_normalOffsetArray[0][0][0]);
-
+  glBufferSubData( GL_ARRAY_BUFFER, 0, m_M->m_normalOffsetArray[0][1].size() * sizeof(float), &m_M->m_normalOffsetArray[0][1][0]);
+  glBufferSubData( GL_ARRAY_BUFFER, 0, m_M->m_normalOffsetArray[0][0].size() * sizeof(float), &m_M->m_normalOffsetArray[0][0][0]);
 
 
   // pass normals to shader
@@ -149,11 +158,11 @@ void GLWindow::init()
 
   m_vaoFlag = true;
 
-  // link matrices with shader locations
-  m_MVAddress = glGetUniformLocation( boneShader.getShaderProgram(), "MV" );
-  m_MVPAddress = glGetUniformLocation( boneShader.getShaderProgram(), "MVP" );
-  m_NAddress = glGetUniformLocation( boneShader.getShaderProgram(), "N" );
-  m_timeAddress = glGetUniformLocation( boneShader.getShaderProgram(), "Time" );
+//  // link matrices with shader locations
+//  m_MVAddress = glGetUniformLocation( boneShader.getShaderProgram(), "MV" );
+//  m_MVPAddress = glGetUniformLocation( boneShader.getShaderProgram(), "MVP" );
+//  m_NAddress = glGetUniformLocation( boneShader.getShaderProgram(), "N" );
+//  m_timeAddress = glGetUniformLocation( boneShader.getShaderProgram(), "Time" );
 
 
 
@@ -163,11 +172,11 @@ void GLWindow::init()
   //------------------------------------------------------------------------------------
 
 
-//  m_shader = Shader( "m_shader", shadersAddress + "phong_vert.glsl", shadersAddress + "simplefrag.glsl" );
+  //m_shader = Shader( "m_shader", shadersAddress + "phong_vert.glsl", shadersAddress + "simplefrag.glsl" );
 //  //Shader boneShader = Shader( "bone_shader", shadersAddress + "phong_vert.glsl", shadersAddress + "muscle_frag.glsl" );
 
-//  glLinkProgram( m_shader.getShaderProgram() );
-//  glUseProgram( m_shader.getShaderProgram() );
+  //glLinkProgram( m_shader.getShaderProgram() );
+  //glUseProgram( m_shader.getShaderProgram() );
 
 ////  glLinkProgram( boneShader.getShaderProgram() );
 ////  glUseProgram( boneShader.getShaderProgram() );
@@ -186,39 +195,39 @@ void GLWindow::init()
 ////  glGenBuffers( 1, &m_nbo );
 
 
-//  m_amountVertexData = m_M->m_offsetArray[0][1].size();
+//  m_amountVertexData = m_M->m_offsetArray[0][0].size();
 
 //  // load vertices
 //  glBindBuffer( GL_ARRAY_BUFFER, m_vbo );
 //  glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
-//  glBufferSubData( GL_ARRAY_BUFFER, 0, m_M->m_offsetArray[0][1].size() * sizeof(float), &m_M->m_offsetArray[0][1][0]);
+//  glBufferSubData( GL_ARRAY_BUFFER, 0, m_M->m_offsetArray[0][0].size() * sizeof(float), &m_M->m_offsetArray[0][0][0]);
 
 
 //  // pass vertices to shader
-//  GLint pos2 = glGetAttribLocation(m_shader.getShaderProgram(), "VertexPosition" );
-//  glEnableVertexAttribArray( pos2 );
-//  glVertexAttribPointer( pos2, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+//  //GLint pos2 = glGetAttribLocation(m_shader.getShaderProgram(), "VertexPosition" );
+//  //glEnableVertexAttribArray( pos2 );
+//  glVertexAttribPointer( pos, 3, GL_FLOAT, GL_FALSE, 0, 0 );
 
 
 //  // load normals
 //  glBindBuffer( GL_ARRAY_BUFFER,	m_nbo );
 //  glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
-//  glBufferSubData( GL_ARRAY_BUFFER, 0, m_M->m_offsetArray[0][1].size() * sizeof(float), &m_M->m_normalOffsetArray[0][1][0]);
+//  glBufferSubData( GL_ARRAY_BUFFER, 0, m_M->m_offsetArray[0][0].size() * sizeof(float), &m_M->m_normalOffsetArray[0][0][0]);
 
 
 
 //  // pass normals to shader
-//  GLint n2 = glGetAttribLocation( m_shader.getShaderProgram(), "VertexNormal" );
-//  glEnableVertexAttribArray( n2);
-//  glVertexAttribPointer( n2, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+//  //GLint n2 = glGetAttribLocation( m_shader.getShaderProgram(), "VertexNormal" );
+//  //glEnableVertexAttribArray( n2);
+//  glVertexAttribPointer( n, 3, GL_FLOAT, GL_FALSE, 0, 0 );
 
-//  m_vaoFlag = true;
+  //m_vaoFlag = true;
 
-//  // link matrices with shader locations
-//  m_MVAddress = glGetUniformLocation( m_shader.getShaderProgram(), "MV" );
-//  m_MVPAddress = glGetUniformLocation( m_shader.getShaderProgram(), "MVP" );
-//  m_NAddress = glGetUniformLocation( m_shader.getShaderProgram(), "N" );
-//  m_timeAddress = glGetUniformLocation( m_shader.getShaderProgram(), "Time" );
+  // link matrices with shader locations
+  m_MVAddress = glGetUniformLocation( boneShader.getShaderProgram(), "MV" );
+  m_MVPAddress = glGetUniformLocation( boneShader.getShaderProgram(), "MVP" );
+  m_NAddress = glGetUniformLocation( boneShader.getShaderProgram(), "N" );
+  m_timeAddress = glGetUniformLocation( boneShader.getShaderProgram(), "Time" );
 
 
 
