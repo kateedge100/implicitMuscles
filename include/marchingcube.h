@@ -117,6 +117,10 @@ public:
     /// @brief An array of the vertices normals of the meshes at each offset level, used for quickly updating offset
     std::vector<float> m_normalOffsetArray [10][4];
     //----------------------------------------------------------------------------------------------------------------------
+    std::vector<float> m_renderNormalArray;
+    //----------------------------------------------------------------------------------------------------------------------
+    std::vector<float> m_renderArray;
+    //----------------------------------------------------------------------------------------------------------------------
     typedef sdf::signed_distance_field_from_mesh mesh;
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief Number of dynamic meshes initialized in the compiler

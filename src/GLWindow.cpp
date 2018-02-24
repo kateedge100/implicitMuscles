@@ -44,14 +44,14 @@ void GLWindow::initializeGL()
   glClearColor( 0.5f, 0.5f, 0.5f, 1.0f );
   glViewport( 0, 0, devicePixelRatio(), devicePixelRatio() );
 
-  m_M = new MarchingCube(2,0);
+  m_M = new MarchingCube(2,1);
 
   // dynamic
   m_M->addMesh(1,"models/cube1.obj", false);
   m_M->addMesh(2,"models/bone.obj", false);
 
   // static
-  //m_M->addMesh(1,"models/bone.obj", true);
+  m_M->addMesh(1,"models/cube2.obj", true);
 
   // pass vertices to shader
   init();
@@ -112,6 +112,7 @@ void GLWindow::init()
       return;
   }
 
+
   glGenVertexArrays( 1, &m_vao );
   glBindVertexArray( m_vao );
 
@@ -121,18 +122,34 @@ void GLWindow::init()
 
 
 
+
   // polygonizes the input mesh
   m_M->run();
 
-  m_amountVertexData = m_M->m_offsetArray[0][1].size() + m_M->m_offsetArray[0][0].size();
+
+  // copy vertices from 2d array to 1d array based on offset level for rendering
+  for(int i = 0; i<m_M->m_noDynamic + m_M->m_noStatic; i++)
+  {
+
+      for(uint j =0; j < m_M->m_offsetArray[0][i].size(); ++j )
+      {
+
+         m_M->m_renderArray.push_back(m_M->m_offsetArray[0][i][j]);
+         m_M->m_renderNormalArray.push_back(m_M->m_normalOffsetArray[0][i][j]);
+
+      }
+
+  }
+
+  m_amountVertexData = m_M->m_renderArray.size();//m_M->m_offsetArray[0][1].size() + m_M->m_offsetArray[0][0].size();
 
   // load vertices
   glBindBuffer( GL_ARRAY_BUFFER, m_vbo );
   glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
   // pass bone vertex
-  glBufferSubData( GL_ARRAY_BUFFER, 0, m_M->m_offsetArray[0][0].size() * sizeof(float), &m_M->m_offsetArray[0][0][0]);
+  glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m_M->m_renderArray[0]);
   // pass cube vertex
-  glBufferSubData( GL_ARRAY_BUFFER, m_M->m_offsetArray[0][0].size() * sizeof(float), m_M->m_offsetArray[0][1].size() * sizeof(float), &m_M->m_offsetArray[0][1][0]);
+  //glBufferSubData( GL_ARRAY_BUFFER, m_M->m_offsetArray[0][0].size() * sizeof(float), m_M->m_offsetArray[0][1].size() * sizeof(float), &m_M->m_offsetArray[0][1][0]);
 
 
   // pass vertices to shader
@@ -144,8 +161,8 @@ void GLWindow::init()
   // load normals
   glBindBuffer( GL_ARRAY_BUFFER,	m_nbo );
   glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
-  glBufferSubData( GL_ARRAY_BUFFER, 0, m_M->m_normalOffsetArray[0][0].size() * sizeof(float), &m_M->m_normalOffsetArray[0][0][0]);
-  glBufferSubData( GL_ARRAY_BUFFER, m_M->m_normalOffsetArray[0][0].size()* sizeof(float), m_M->m_normalOffsetArray[0][1].size() * sizeof(float), &m_M->m_normalOffsetArray[0][1][0]);
+  glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData* sizeof(float), &m_M->m_renderNormalArray[0]);
+  //glBufferSubData( GL_ARRAY_BUFFER, m_M->m_normalOffsetArray[0][0].size()* sizeof(float), m_M->m_normalOffsetArray[0][1].size() * sizeof(float), &m_M->m_normalOffsetArray[0][1][0]);
 
 
   // pass normals to shader
@@ -207,14 +224,14 @@ void GLWindow::renderScene()
   glUniform3fv( m_colorAddress, 1, glm::value_ptr( color ) );
 
 
-  glDrawArrays( GL_TRIANGLES, 0, m_M->m_offsetArray[0][0].size()/3 );
+  glDrawArrays( GL_TRIANGLES, 0, (m_M->m_offsetArray[0][0].size() + m_M->m_offsetArray[0][1].size())/3 );
 
   color = {1,0,0};
 
   glUniform3fv( m_colorAddress, 1, glm::value_ptr( color ) );
 
 
-  glDrawArrays( GL_TRIANGLES, m_M->m_offsetArray[0][0].size()/3, m_M->m_offsetArray[0][1].size()/3 );
+  glDrawArrays( GL_TRIANGLES, (m_M->m_offsetArray[0][0].size() + m_M->m_offsetArray[0][1].size())/3 , m_M->m_offsetArray[0][2].size()/3 );
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
