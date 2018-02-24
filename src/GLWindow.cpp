@@ -130,9 +130,9 @@ void GLWindow::init()
   glBindBuffer( GL_ARRAY_BUFFER, m_vbo );
   glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
   // pass bone vertex
-  glBufferSubData( GL_ARRAY_BUFFER, 0, m_M->m_offsetArray[0][1].size() * sizeof(float), &m_M->m_offsetArray[0][1][0]);
+  glBufferSubData( GL_ARRAY_BUFFER, 0, m_M->m_offsetArray[0][0].size() * sizeof(float), &m_M->m_offsetArray[0][0][0]);
   // pass cube vertex
-  glBufferSubData( GL_ARRAY_BUFFER, m_M->m_offsetArray[0][1].size() * sizeof(float), m_M->m_offsetArray[0][0].size() * sizeof(float), &m_M->m_offsetArray[0][0][0]);
+  glBufferSubData( GL_ARRAY_BUFFER, m_M->m_offsetArray[0][0].size() * sizeof(float), m_M->m_offsetArray[0][1].size() * sizeof(float), &m_M->m_offsetArray[0][1][0]);
 
 
   // pass vertices to shader
@@ -144,8 +144,8 @@ void GLWindow::init()
   // load normals
   glBindBuffer( GL_ARRAY_BUFFER,	m_nbo );
   glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
-  glBufferSubData( GL_ARRAY_BUFFER, 0, m_M->m_normalOffsetArray[0][1].size() * sizeof(float), &m_M->m_normalOffsetArray[0][1][0]);
-  glBufferSubData( GL_ARRAY_BUFFER, m_M->m_normalOffsetArray[0][1].size()* sizeof(float), m_M->m_normalOffsetArray[0][0].size() * sizeof(float), &m_M->m_normalOffsetArray[0][0][0]);
+  glBufferSubData( GL_ARRAY_BUFFER, 0, m_M->m_normalOffsetArray[0][0].size() * sizeof(float), &m_M->m_normalOffsetArray[0][0][0]);
+  glBufferSubData( GL_ARRAY_BUFFER, m_M->m_normalOffsetArray[0][0].size()* sizeof(float), m_M->m_normalOffsetArray[0][1].size() * sizeof(float), &m_M->m_normalOffsetArray[0][1][0]);
 
 
   // pass normals to shader
@@ -202,12 +202,19 @@ void GLWindow::renderScene()
 
   glUniformMatrix3fv( m_NAddress, 1, GL_FALSE, glm::value_ptr( N ) );
 
-  glm::vec3 color = {1,0,0};
+  glm::vec3 color = {0,1,0};
 
   glUniform3fv( m_colorAddress, 1, glm::value_ptr( color ) );
 
 
-  glDrawArrays( GL_TRIANGLES, 0 , ( m_M->m_offsetArray[0][1].size() * sizeof(float) / 3 ) );
+  glDrawArrays( GL_TRIANGLES, 0, m_M->m_offsetArray[0][0].size()/3 );
+
+  color = {1,0,0};
+
+  glUniform3fv( m_colorAddress, 1, glm::value_ptr( color ) );
+
+
+  glDrawArrays( GL_TRIANGLES, m_M->m_offsetArray[0][0].size()/3, m_M->m_offsetArray[0][1].size()/3 );
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
