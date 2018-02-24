@@ -47,11 +47,12 @@ void GLWindow::initializeGL()
   m_M = new MarchingCube(2,1);
 
   // dynamic
-  m_M->addMesh(1,"models/cube1.obj", false);
-  m_M->addMesh(2,"models/bone.obj", false);
+  m_M->addMesh(1,"models/muscle1.obj", false);
+  m_M->addMesh(2,"models/muscle2.obj", false);
+  //m_M->addMesh(3,"models/cube3.obj", false);
 
   // static
-  m_M->addMesh(1,"models/cube2.obj", true);
+  m_M->addMesh(1,"models/bone.obj", true);
 
   // pass vertices to shader
   init();
@@ -97,7 +98,7 @@ void GLWindow::init()
 {
   std::string shadersAddress = "shaders/";
   m_shader = Shader( "m_shader", shadersAddress + "phong_vert.glsl", shadersAddress + "simplefrag.glsl" );
-  //Shader boneShader = Shader( "bone_shader", shadersAddress + "phong_vert.glsl", shadersAddress + "muscle_frag.glsl" );
+
 
 
 
@@ -141,7 +142,7 @@ void GLWindow::init()
 
   }
 
-  m_amountVertexData = m_M->m_renderArray.size();//m_M->m_offsetArray[0][1].size() + m_M->m_offsetArray[0][0].size();
+  m_amountVertexData = m_M->m_renderArray.size();
 
   // load vertices
   glBindBuffer( GL_ARRAY_BUFFER, m_vbo );
@@ -184,6 +185,36 @@ void GLWindow::init()
 
 //------------------------------------------------------------------------------------------------------------------------------
 
+int GLWindow::muscleTotalVertices()
+{
+    int totalVertices = 0;
+
+    for(int i = 0; i< m_M->m_noDynamic; i++)
+    {
+        totalVertices += m_M->m_offsetArray[int(m_offsetUI*5)][i].size();
+    }
+
+    return totalVertices;
+
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+
+int GLWindow::boneTotalVertices()
+{
+    int totalVertices = 0;
+
+    for(int i = m_M->m_noDynamic; i< m_M->m_noDynamic + m_M->m_noStatic; i++)
+    {
+        totalVertices += m_M->m_offsetArray[int(m_offsetUI*5)][i].size();
+    }
+
+    return totalVertices;
+
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+
 void GLWindow::paintGL()
 {
   glViewport( 0, 0, width(), height() );
@@ -219,19 +250,19 @@ void GLWindow::renderScene()
 
   glUniformMatrix3fv( m_NAddress, 1, GL_FALSE, glm::value_ptr( N ) );
 
-  glm::vec3 color = {0,1,0};
+  glm::vec3 color = {181.0f/255, 52.0f/255, 52.0f/255};
 
   glUniform3fv( m_colorAddress, 1, glm::value_ptr( color ) );
 
 
-  glDrawArrays( GL_TRIANGLES, 0, (m_M->m_offsetArray[0][0].size() + m_M->m_offsetArray[0][1].size())/3 );
+  glDrawArrays( GL_TRIANGLES, 0, muscleTotalVertices()/3 );
 
-  color = {1,0,0};
+  color = {242.0f/255, 232.0f/255, 213.0f/255};
 
   glUniform3fv( m_colorAddress, 1, glm::value_ptr( color ) );
 
 
-  glDrawArrays( GL_TRIANGLES, (m_M->m_offsetArray[0][0].size() + m_M->m_offsetArray[0][1].size())/3 , m_M->m_offsetArray[0][2].size()/3 );
+  glDrawArrays( GL_TRIANGLES, muscleTotalVertices()/3 , boneTotalVertices()/3 );
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -240,14 +271,36 @@ void GLWindow::updateOffset(double _offset)
 {
     m_offsetUI = _offset;
 
-    m_amountVertexData = m_M->m_offsetArray[int(_offset*5)][0].size();
+    m_M->m_renderArray.clear();
+    m_M->m_renderNormalArray.clear();
+
+
+
+    // copy vertices from 2d array to 1d array based on offset level for rendering
+    for(int i = 0; i<m_M->m_noDynamic + m_M->m_noStatic; i++)
+    {
+
+        for(uint j =0; j < m_M->m_offsetArray[int(m_offsetUI*5)][i].size(); ++j )
+        {
+
+           m_M->m_renderArray.push_back(m_M->m_offsetArray[int(m_offsetUI*5)][i][j]);
+           m_M->m_renderNormalArray.push_back(m_M->m_normalOffsetArray[int(m_offsetUI*5)][i][j]);
+
+        }
+
+    }
+
+
+
+
+    m_amountVertexData = m_M->m_renderArray.size();
 
     std::cout<<"Offset Updated!\nNew offset is "<<_offset<<"\n";
 
     // load vertices
     glBindBuffer( GL_ARRAY_BUFFER, m_vbo );
     glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
-    glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m_M->m_offsetArray[int(_offset*5)][0][0]);
+    glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m_M->m_renderArray[0]);
 
     // pass vertices to shader
     GLint pos = glGetAttribLocation( m_shader.getShaderProgram(), "VertexPosition" );
@@ -257,7 +310,7 @@ void GLWindow::updateOffset(double _offset)
     // load normals
     glBindBuffer( GL_ARRAY_BUFFER,	m_nbo );
     glBufferData( GL_ARRAY_BUFFER, m_amountVertexData * sizeof(float), 0, GL_STATIC_DRAW );
-    glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m_M->m_normalOffsetArray[int(_offset*5)][0][0]);
+    glBufferSubData( GL_ARRAY_BUFFER, 0, m_amountVertexData * sizeof(float), &m_M->m_renderNormalArray[0]);
 
     // pass normals to shader
     GLint n = glGetAttribLocation( m_shader.getShaderProgram(), "VertexNormal" );

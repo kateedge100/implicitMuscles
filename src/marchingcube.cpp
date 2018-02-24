@@ -248,7 +248,7 @@ bool MarchingCube::PrepareVolume(int meshNo, bool _static)
 
 void MarchingCube::run()
 {
-    int noOffsetLevels = 1;
+    int noOffsetLevels = 5;
 
     // for each offset level
     for( int i = 0; i<noOffsetLevels; i++)
