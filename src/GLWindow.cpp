@@ -250,7 +250,7 @@ void GLWindow::renderScene()
 
   glUniformMatrix3fv( m_NAddress, 1, GL_FALSE, glm::value_ptr( N ) );
 
-  glm::vec3 color = {181.0f/255, 52.0f/255, 52.0f/255};
+  glm::vec3 color = {183.0f/255, 80.0f/255, 80.0f/255};
 
   glUniform3fv( m_colorAddress, 1, glm::value_ptr( color ) );
 

@@ -184,9 +184,9 @@ bool MarchingCube::PrepareVolume(int meshNo, bool _static)
 {
 
     // recommended 100 - 200
-    volume_width = 100;
-    volume_height = 100;
-    volume_depth = 100;
+    volume_width = 300;
+    volume_height = 300;
+    volume_depth = 300;
 
     m_volume_size = volume_width*volume_height*volume_depth;
 
@@ -248,7 +248,7 @@ bool MarchingCube::PrepareVolume(int meshNo, bool _static)
 
 void MarchingCube::run()
 {
-    int noOffsetLevels = 5;
+    int noOffsetLevels = 1;
 
     // for each offset level
     for( int i = 0; i<noOffsetLevels; i++)
