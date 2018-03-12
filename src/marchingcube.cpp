@@ -59,7 +59,14 @@ float MarchingCube::offsetMesh(glm::vec3 pos, int objNo)
     // Current Muscle
     src[0] = m_dynObj[objNo-1](pos.x,pos.y,pos.z);
 
-    ub[0] = src[0]-m_offset;
+    float localOffset = m_offset;
+
+    float t = fabs(pos.y - 6.0)*0.2;
+    if (t < 0.0) t = 0.0;
+    if (t > 1.0) t = 1.0;
+    localOffset = localOffset*(t*0.1 + (1.0-t));
+
+    ub[0] = src[0]-localOffset;
 
     //Alocate Muscle to variables, src[0] , must be current muscle
     int j = 1;
@@ -70,7 +77,7 @@ float MarchingCube::offsetMesh(glm::vec3 pos, int objNo)
 
 
             src[j] = m_dynObj[i](pos.x,pos.y,pos.z);
-            ub[j] = src[j] - m_offset;
+            ub[j] = src[j] - localOffset;
             j++;
         }
 
@@ -90,7 +97,7 @@ float MarchingCube::offsetMesh(glm::vec3 pos, int objNo)
 
         if (m_noStatic == 0)
         {
-            return src[0] - m_offset;
+            return src[0] - localOffset;
         }
         else
         {
@@ -104,7 +111,7 @@ float MarchingCube::offsetMesh(glm::vec3 pos, int objNo)
                 r = fa/(fa + 1.0);
             }
 
-            return src[0] - (m_offset*r);
+            return src[0] - (localOffset*r);
         }
 
 
@@ -135,7 +142,7 @@ float MarchingCube::offsetMesh(glm::vec3 pos, int objNo)
             r = fa/(fa + 1.0);
         }
 
-        return src[0] - (m_offset*r);
+        return src[0] - (localOffset*r);
         break;
     case 3:
 
@@ -165,7 +172,7 @@ float MarchingCube::offsetMesh(glm::vec3 pos, int objNo)
             r = fa/(fa + 1.0);
         }
 
-        return src[0] - (m_offset*r);
+        return src[0] - (localOffset*r);
         break;
 
     default:
@@ -185,7 +192,7 @@ bool MarchingCube::PrepareVolume(int meshNo, bool _static)
 
     // recommended 100 - 200
     volume_width = 300;
-    volume_height = 300;
+    volume_height =300;
     volume_depth = 300;
 
     m_volume_size = volume_width*volume_height*volume_depth;
@@ -253,7 +260,7 @@ void MarchingCube::run()
     // for each offset level
     for( int i = 0; i<noOffsetLevels; i++)
     {
-        m_offset = float(i)/5;
+        m_offset = float(0.3);
 
 
         std::cout<<"Polygonizing dynamic "<<"\n";

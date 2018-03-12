@@ -49,7 +49,7 @@ void GLWindow::initializeGL()
   // dynamic
   m_M->addMesh(1,"models/muscle1.obj", false);
   m_M->addMesh(2,"models/muscle2.obj", false);
-  //m_M->addMesh(3,"models/cube3.obj", false);
+  //m_M->addMesh(3,"models/muscle3.obj", false);
 
   // static
   m_M->addMesh(1,"models/bone.obj", true);
